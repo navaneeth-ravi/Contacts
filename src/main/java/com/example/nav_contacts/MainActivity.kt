@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import kotlin.properties.Delegates
 import androidx.appcompat.widget.Toolbar
 
@@ -15,19 +16,19 @@ class MainActivity : AppCompatActivity() {
     var portrait by Delegates.notNull<Boolean>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-//        CallPermission(this).check(this)
-//        CallPermission.checking(this)
+        Database(this).getAlldata()
 
+        setContentView(R.layout.activity_main)
         if(savedInstanceState!=null){
             gridForRecycler=savedInstanceState.getBoolean("grid")
         }
+
         supportFragmentManager.popBackStack()
         portrait = findViewById<LinearLayout>(R.id.activity_main_portrait) != null
-        if(savedInstanceState==null){
+
+        if(savedInstanceState==null)
             supportFragmentManager.beginTransaction()
                 .add(R.id.container12, DisplayContactsFragment()).commit()
-        }
         onclickButtons()
     }
 
@@ -57,10 +58,12 @@ class MainActivity : AppCompatActivity() {
         }
         contacts.setOnClickListener {
             gridForRecycler=false
+            DBHelper(context=this,null ).writableDatabase
             favorites.setTextColor(getColor(R.color.black))
             contacts.setTextColor(getColor(R.color.blue))
             supportFragmentManager.popBackStack()
             supportFragmentManager.beginTransaction().replace(R.id.container12,DisplayContactsFragment()).commit()
         }
     }
+
 }

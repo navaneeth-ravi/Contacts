@@ -21,12 +21,13 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.random.Random
 
-class MyAdapter(private val gridForRecycler:Boolean,val number: ArrayList<String>?=null,var context:Context?=null):
+class MyAdapter(private val gridForRecycler:Boolean,var number: ArrayList<String>?=null,var context:Context?=null):
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var values:ArrayList<Contact>
-    private var contactList:ArrayList<Contact> = Database.list
-    var favList:ArrayList<Contact> =Database.favList
+     var values:ArrayList<Contact>
+//    private var contactList:ArrayList<Contact> = Database.list
+//    var favList:ArrayList<Contact> =Database.favList
     init {
+        Database(context).getAlldata()
         values=assignAdapterData()
     }
     inner class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
@@ -117,8 +118,12 @@ class MyAdapter(private val gridForRecycler:Boolean,val number: ArrayList<String
         view.context.startActivity(intent)
     }
     private fun assignAdapterData():ArrayList<Contact>{
-        return if(gridForRecycler){
-            favList
-        } else contactList
+        return if(gridForRecycler)
+            Database.favList
+        else
+            Database.list
+    }
+    fun setAdapterData(){
+        values=Database.list
     }
 }

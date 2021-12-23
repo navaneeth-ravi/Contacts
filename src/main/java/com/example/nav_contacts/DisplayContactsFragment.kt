@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +38,7 @@ class DisplayContactsFragment : Fragment() {
             else recyler.layoutManager = GridLayoutManager(activity, 2)
         }
         else recyler.layoutManager = LinearLayoutManager(activity)
-        recyler.adapter = MyAdapter(parent.gridForRecycler)
+        recyler.adapter = MyAdapter(parent.gridForRecycler, context = context)
         return view1
     }
     private fun addNewContactWhenClick(button: Button){
@@ -49,6 +50,14 @@ class DisplayContactsFragment : Fragment() {
     }
     override fun onResume() {
         super.onResume()
-        recyler.adapter?.notifyDataSetChanged()
+        val adapter=(recyler.adapter as MyAdapter)
+        if(adapter!=null &&!(activity as MainActivity).gridForRecycler) {
+            adapter.setAdapterData()
+            adapter.notifyDataSetChanged()
+//            (recyler.adapter as MyAdapter).notifyItemRangeChanged(0,Database.list.size)
+        }else{
+            adapter.values=Database.favList
+            adapter.notifyDataSetChanged()
+        }
     }
 }

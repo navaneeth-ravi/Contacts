@@ -39,6 +39,9 @@ class ContactDetails : AppCompatActivity(){
         if(contact.favorite){
             star.setImageResource(R.drawable.fav_star)
         }
+        if(savedInstanceState!=null){
+            contact.number.size
+        }
         recyler=findViewById(R.id.recycler_contacts)
         recyler.layoutManager=LinearLayoutManager(this)
         recyler.adapter=MyAdapter(false,contact.number, context = this)
@@ -57,14 +60,18 @@ class ContactDetails : AppCompatActivity(){
     @SuppressLint("SetTextI18n")
     private fun fillDetailsInLayout(){
         findViewById<Button>(R.id.contact_icon).text="${contact.firstName[0]}"
-        findViewById<TextView>(R.id.contact_name).text="${contact.firstName} ${contact.lastName}"
+        findViewById<TextView>(R.id.contact_name).text="${contact.firstName} ${contact.lastName}  ${contact.favorite}"
     }
     private fun callMessageButtonListener(){
         findViewById<ImageView>(R.id.call).setOnClickListener {
-            phoneNumber=contact.number[0]
-            if (ContextCompat.checkSelfPermission(this,
+
+            if(ContextCompat.checkSelfPermission(this,
                     Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED)
-                makeCall()
+                        if(contact.number.isNotEmpty()) {
+                            phoneNumber=contact.number[0]
+                            makeCall()
+                        }else
+                            Toast.makeText(this, "Number not available for Call", Toast.LENGTH_SHORT).show()
             else
                 requestCallPermission();
         }
@@ -82,7 +89,7 @@ class ContactDetails : AppCompatActivity(){
                     val uri= Uri.fromParts("package",packageName,null)
                     intent.data=uri
                     startActivity(intent)
-            }.setNegativeButton("cancel"){dialogInterface, i ->
+            }.setNegativeButton("cancel"){ dialogInterface, _ ->
                     dialogInterface.dismiss()
                 }.create().show()
         }
@@ -119,18 +126,24 @@ class ContactDetails : AppCompatActivity(){
                 star.setImageResource(R.drawable.star_border)
                 Database.favList.remove(contact)
                 contact.favorite=false
-                changeFavoriteOption(contact.favorite,contact.userId)
+                contact.dbID?.let { it1 -> changeFavoriteOption(contact.favorite, it1) }
+                val db=DBHelper(this,null)
+                db.update(contact)
+                db.close()
             }else {
                 star.setImageResource(R.drawable.fav_star)
                 contact.favorite=true
-                changeFavoriteOption(contact.favorite,contact.userId)
+                contact.dbID?.let { it1 -> changeFavoriteOption(contact.favorite, it1) }
                 Database.favList.add(contact)
+                val db=DBHelper(this,null)
+                db.update(contact)
+                db.close()
             }
         }
     }
     private fun changeFavoriteOption(option:Boolean,userId:Int){
         for(i in Database.list){
-            if(i.userId==userId){
+            if(i.dbID==userId){
                 i.favorite=option
             }
         }
@@ -149,32 +162,37 @@ class ContactDetails : AppCompatActivity(){
         return true
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId==R.id.delete){
-            for (i in 0 until Database.list.size) {
-                if (Database.list[i].userId == contact.userId) {
-                    Toast.makeText(this, "Deleted ${contact.firstName}", Toast.LENGTH_SHORT).show()
-                    Database.list.removeAt(i)
-                    Database.refreshFavList()
-                    break
+        AlertDialog.Builder(this).setTitle("Are you sure to 'delete'?").setMessage("permanently deleted, can't be retrieved")
+            .setPositiveButton("Delete") { _, _ ->
+                if(item.itemId==R.id.delete){
+                    for (i in 0 until Database.list.size) {
+                        if (Database.list[i].userId == contact.userId) {
+                            Toast.makeText(this, "Deleted ${contact.firstName}", Toast.LENGTH_SHORT).show()
+                            Database.list.removeAt(i)
+                            DBHelper(this,null).deleteValues(contact)
+                            Database.makeFavResult()
+                            break
+                        }
+                    }
+                    finish()
                 }
-            }
-            finish()
-        }
+            }.setNegativeButton("cancel"){ dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }.create().show()
+
         return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
         super.onResume()
-        for(i in Database.list){
-            if (i.userId==contact.userId){
+        for(i in Database.list)
+            if (i.dbID==contact.dbID){
                 contact=i
                 break
             }
-        }
         val adapter=(recyler.adapter as MyAdapter)
-        for(i in 0 until contact.number.size){
-            adapter?.number?.set(i,contact.number[i])
-            recyler.adapter?.notifyItemChanged(i)
-        }
+        adapter.number=contact.number
+        adapter.notifyDataSetChanged()
+        fillDetailsInLayout()
     }
 }
