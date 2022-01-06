@@ -39,10 +39,35 @@ class Database(val context: Context?=null) {
 //        }
 
     }
-
+    fun insert(contact: Contact){
+        val db= context?.let { DBHelper(it,null) }
+        var number=ArrayList<String>()
+        if(contact.number.isNotEmpty()){
+            number.add(contact.number[0])
+            if(contact.number.size==2){
+               number= contact.number
+            }else{
+                number.add("empty")
+            }
+        }else{
+            number.add("empty")
+            number.add("empty")
+        }
+        db?.addToDatabase(contact.firstName,contact.lastName,number[0]
+            ,number[1],contact.email,contact.favorite)
+        db?.close()
+    }
+    fun update(contact: Contact){
+        val db= context?.let { DBHelper(it,null) }
+        db?.update(contact)
+    }
     fun getAlldata(){
         val db= context?.let { DBHelper(it,null) }
         list=db!!.getAllData()
         makeFavResult()
+    }
+    fun delete(contact: Contact){
+        val db= context?.let { DBHelper(it,null) }
+        db?.deleteValues( contact )
     }
 }

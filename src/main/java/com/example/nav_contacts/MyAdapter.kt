@@ -2,30 +2,31 @@ package com.example.nav_contacts
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.provider.Settings
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.arch.core.executor.DefaultTaskExecutor
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import java.io.File
 import kotlin.random.Random
 
 class MyAdapter(private val gridForRecycler:Boolean,var number: ArrayList<String>?=null,var context:Context?=null):
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-     var values:ArrayList<Contact>
-//    private var contactList:ArrayList<Contact> = Database.list
-//    var favList:ArrayList<Contact> =Database.favList
+
+    var values:ArrayList<Contact>
+
     init {
         Database(context).getAlldata()
         values=assignAdapterData()
@@ -34,6 +35,9 @@ class MyAdapter(private val gridForRecycler:Boolean,var number: ArrayList<String
         val button:Button=itemView.findViewById(R.id.contact_icon)
         val name:TextView=itemView.findViewById(R.id.contact_name)
         val card:RelativeLayout=itemView.findViewById(R.id.card)
+        val defaultUserIcon:Button=itemView.findViewById(R.id.contact_icon)
+        val profileImage:ImageView=itemView.findViewById(R.id.profile_image)
+        val profileCard:CardView=itemView.findViewById(R.id.contact_icon1)
     }
     inner class ViewHolder1(itemView: View): RecyclerView.ViewHolder(itemView){
         val letter:TextView=itemView.findViewById(R.id.letter)
@@ -47,10 +51,10 @@ class MyAdapter(private val gridForRecycler:Boolean,var number: ArrayList<String
         val layout:RelativeLayout=itemView.findViewById(R.id.lay)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if(viewType== DisplayContactsFragment.CONTACTS) {
+        return if(viewType== ContactsDisplayFragment.CONTACTS) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_view, parent, false)
             ViewHolder(view)
-        }else if (viewType== DisplayContactsFragment.FAVORITES){
+        }else if (viewType== ContactsDisplayFragment.FAVORITES){
             val view = LayoutInflater.from(parent.context).inflate(R.layout.favorites_item, parent, false)
             ViewHolder1(view)
         }else {
@@ -60,31 +64,93 @@ class MyAdapter(private val gridForRecycler:Boolean,var number: ArrayList<String
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) =
-        if (getItemViewType(position)==DisplayContactsFragment.CONTACTS) {
-            holder as ViewHolder
-            holder.button.text = values[position % values.size].firstName[0].toString()
-            //setRandomBackgroundColor(holder.button)
-            holder.name.text ="${values[position % values.size].firstName} ${values[position % values.size].lastName}"
-            holder.card.setOnClickListener {
-                showContactDetails(it, position)
-            }
-            holder.button.setOnClickListener {
-                showContactDetails(it, position)
-            }
-        }else if(getItemViewType(position)==DisplayContactsFragment.FAVORITES){
-            holder as ViewHolder1
-            holder.letter.text= values[position % values.size].firstName[0].toString()
+    private fun onBindViewHolderContact(holder: ViewHolder, position: Int){
+        val firstName = values[position % values.size].firstName
+        val lastName = values[position % values.size].lastName
+        holder.button.text = firstName[0].toString()
+        holder.name.text = "${firstName}  ${lastName}"
+        if (!ContactsDisplayFragment.SORT_BY_FIRST_NAME)
+            holder.name.text = lastName + " " + firstName
+        //setRandomBackgroundColor(holder.button)
+
+//        holder.name.text = firstName+lastName
+        holder.card.setOnClickListener { showContactDetails(it, position) }
+        holder.button.setOnClickListener { showContactDetails(it, position) }
+
+        val directory = context?.filesDir
+        val imageDirectory = File(directory, "profileImages")
+        val imgFile = File(imageDirectory, "${firstName + lastName}.png")
+        if(imgFile.exists()) {
+            holder.profileImage.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
+        }else{
+            holder.defaultUserIcon.visibility=View.VISIBLE
+            holder.profileCard.visibility=View.GONE
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun onBindViewHolderFavorite(holder: ViewHolder1, position: Int){
+        holder.letter.text= values[position % values.size].firstName[0].toString()
+        if(!ContactsDisplayFragment.SORT_BY_FIRST_NAME)
+            holder.contactName.text=values[position % values.size].lastName + " " + values[position % values.size].firstName
+        else
             holder.contactName.text =values[position % values.size].firstName + " " + values[position % values.size].lastName
 //            setRandomBackgroundColor(holder.card)
-            holder.edit.setOnClickListener { showContactDetails(it,position) }
-            holder.card.setOnClickListener{
-                val phone="tel:"+values[position].number[0]
-                val intent= Intent(Intent.ACTION_CALL)
-                intent.data = Uri.parse(phone)
-                it.context.startActivity(intent)
+        holder.edit.setOnClickListener { showContactDetails(it,position) }
+        holder.card.setOnClickListener{
+            var phone:String
+            if(values[position].number.isNotEmpty()) {
+                if (ContextCompat.checkSelfPermission(it.context, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED )
+                {
+                    phone = "tel:" + values[position].number[0]
+                    val intent = Intent(Intent.ACTION_CALL)
+                    intent.data = Uri.parse(phone)
+                    it.context.startActivity(intent)
+                } else {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(
+                            context as MainActivity,
+                            Manifest.permission.CALL_PHONE
+                        )
+                    ) {
+                        AlertDialog.Builder(context)
+                            .setTitle("Call permissions needed to make call")
+                            .setMessage("'ok' to allow from settings")
+                            .setPositiveButton("ok") { _, _ ->
+                                val intent =
+                                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                val uri = Uri.fromParts(
+                                    "package",
+                                    (context as MainActivity).packageName, null
+                                )
+                                intent.data = uri
+                                it.context.startActivity(intent)
+                            }.setNegativeButton("cancel") { dialogInterface, _ ->
+                                dialogInterface.dismiss()
+                            }.create().show()
+                    } else {
+                        ActivityCompat.requestPermissions(context as MainActivity,
+                            arrayOf(Manifest.permission.CALL_PHONE),
+                            CallPermission.CALL_PERMISSION_CODE
+                        );
+                    }
+                }
             }
-        }else{
+            else
+                Toast.makeText(it.context, "Number not available for Call", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) =
+        if (getItemViewType(position)==ContactsDisplayFragment.CONTACTS) {
+            holder as ViewHolder
+            onBindViewHolderContact(holder,position)
+        }
+        else if(getItemViewType(position)==ContactsDisplayFragment.FAVORITES){
+            holder as ViewHolder1
+            onBindViewHolderFavorite(holder,position)
+        }
+        else{
             holder as ViewHolder2
             val number=number?.get(position)
             holder.number.text="+91 $number"
@@ -108,12 +174,12 @@ class MyAdapter(private val gridForRecycler:Boolean,var number: ArrayList<String
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if(gridForRecycler && number==null) DisplayContactsFragment.FAVORITES
-        else if(!gridForRecycler && number==null) DisplayContactsFragment.CONTACTS
+        return if(gridForRecycler && number==null) ContactsDisplayFragment.FAVORITES
+        else if(!gridForRecycler && number==null) ContactsDisplayFragment.CONTACTS
         else 2
     }
     private fun showContactDetails(view: View, position: Int){
-        val intent=Intent(view.context,ContactDetails::class.java)
+        val intent=Intent( view.context , ContactDetails::class.java )
         intent.putExtra("abc",values[position%values.size])
         view.context.startActivity(intent)
     }
@@ -123,7 +189,10 @@ class MyAdapter(private val gridForRecycler:Boolean,var number: ArrayList<String
         else
             Database.list
     }
-    fun setAdapterData(){
-        values=Database.list
+    fun setAdapterContactData(list:ArrayList<Contact>){
+        values=list
+    }
+    fun setAdapterFavoritesData(list:ArrayList<Contact>){
+        values=list
     }
 }

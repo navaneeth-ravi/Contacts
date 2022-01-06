@@ -8,6 +8,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.graphics.Bitmap
 import android.widget.Toast
 import java.lang.Exception
 
@@ -22,7 +23,8 @@ class DBHelper(val context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 NUMBER1 + " TEXT," +
                 NUMBER2 + " TEXT," +
                 FAVORITE + " TEXT," +
-                EMAIL + " TEXT" + ")")
+                EMAIL + " TEXT," +
+                PROFILE_IMAGE + " TEXT" +")")
         db.execSQL(query)
     }
 
@@ -36,7 +38,7 @@ class DBHelper(val context: Context, factory: SQLiteDatabase.CursorFactory?) :
         val value=(contact.dbID).toString()
         db.delete(TABLE_NAME, ID+"=?", arrayOf(value))
     }
-    fun addToDatabase(firstName : String,lastName : String,number1:String,number2:String,email:String,favorite:Boolean){
+    fun addToDatabase(firstName : String,lastName : String,number1:String="",number2:String="",email:String="",favorite:Boolean){
         val values = ContentValues()
         val db = this.writableDatabase
         values.put(FIRST_NAME, firstName)
@@ -45,6 +47,7 @@ class DBHelper(val context: Context, factory: SQLiteDatabase.CursorFactory?) :
         values.put(NUMBER2,number2)
         values.put(EMAIL,email)
         values.put(FAVORITE,favorite)
+        values.put(PROFILE_IMAGE,"$firstName$lastName.png")
         db.insert(TABLE_NAME, null, values)
 //        Toast.makeText(context, "created $firstName success", Toast.LENGTH_SHORT).show()
     }
@@ -56,10 +59,11 @@ class DBHelper(val context: Context, factory: SQLiteDatabase.CursorFactory?) :
         if(contact.number.isNotEmpty()) {
             cv.put(NUMBER1, contact.number[0])
             if(contact.number.size==2)
-            cv.put(NUMBER2, contact.number[1])
+                cv.put(NUMBER2, contact.number[1])
         }
         cv.put(EMAIL,contact.email)
-        cv.put(FAVORITE,contact.favorite)
+        cv.put( FAVORITE , contact.favorite )
+        cv.put(PROFILE_IMAGE,"${contact.firstName+contact.lastName}.png")
         try {
             db.update(TABLE_NAME, cv, "$ID=?", arrayOf((contact.dbID.toString())))
         }catch (e:Exception){Toast.makeText(context, "exception", Toast.LENGTH_SHORT).show()}
@@ -87,8 +91,10 @@ class DBHelper(val context: Context, factory: SQLiteDatabase.CursorFactory?) :
             val favorites=cursor.getString(5).toInt()==1
 //            Toast.makeText(context, "$favorites", Toast.LENGTH_SHORT).show()
             val email=cursor.getString(6)
-            contactList.add(Contact(firstName,lastName,number,email,favorites, dbID =id ))
+            val profileImageId=cursor.getString(7)
+            contactList.add(Contact(firstName,lastName,number,email,favorites, dbID =id, profile = profileImageId ))
         }
+        contactList.sortBy { it.firstName }
         return contactList
 
     }
@@ -103,5 +109,6 @@ class DBHelper(val context: Context, factory: SQLiteDatabase.CursorFactory?) :
         const val NUMBER2="number2"
         const val EMAIL="email"
         const val FAVORITE="favorite"
+        const val PROFILE_IMAGE="image"
     }
 }
