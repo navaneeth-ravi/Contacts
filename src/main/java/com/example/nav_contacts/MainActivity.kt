@@ -119,6 +119,10 @@ class MainActivity : AppCompatActivity() {
         when(item.itemId){
             R.id.first_name -> displayContactsFragment.sortByFirstName()
             R.id.last_name-> displayContactsFragment.sortByLastName()
+            R.id.dummy->{
+                Database.dummy()
+                Toast.makeText(this, "Dummy added.\nClick Contact button below", Toast.LENGTH_SHORT).show()
+            }
         }
         return super.onOptionsItemSelected(item)
     }

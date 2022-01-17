@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.provider.Settings
 import android.view.View
 import android.widget.*
@@ -28,7 +29,10 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import android.util.Log
+import java.io.IOException
 import java.lang.Exception
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 class CreateAndEditContactActivity : AppCompatActivity() {
@@ -112,13 +116,15 @@ class CreateAndEditContactActivity : AppCompatActivity() {
         if(!imageDirectory.exists()){
             imageDirectory.mkdir()
         }
-        if(imageUri!=null) {
-            val imgFile = File(imageDirectory, "${contact.firstName + contact.lastName}.png")
-            val stream = FileOutputStream(imgFile)
-            bitmap?.compress(Bitmap.CompressFormat.PNG, 10, stream)
-            stream.flush()
-            stream.close()
-        }
+        try {
+            if (imageUri != null) {
+                val imgFile = File(imageDirectory, "${contact.firstName + contact.lastName}.png")
+                val stream = FileOutputStream(imgFile)
+                bitmap?.compress(Bitmap.CompressFormat.PNG, 10, stream)
+                stream.flush()
+                stream.close()
+            }
+        }catch (e: IOException){}
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -144,13 +150,46 @@ class CreateAndEditContactActivity : AppCompatActivity() {
             }
         }
     }
-    private fun getContactFromInputFieldsToSave():ContactDataClass{
+    private fun validateMobileNumber(phone:String):Boolean{
+        val pattern:Pattern= Pattern.compile("[6-9][0-9]{9}")
+        val matcher:Matcher=pattern.matcher(phone)
+        return matcher.matches()
+//        String regexStr = "^[0-9]$";
+//
+//        String number=entered_number.getText().toString();
+//
+//        if(entered_number.getText().toString().length()<10 || number.length()>13 || number.matches(regexStr)==false  ) {
+//            Toast.makeText(MyDialog.this,"Please enter "+"\n"+" valid phone number",Toast.LENGTH_SHORT).show();
+//            // am_checked=0;
+//        }`
+//        return true
+    }
+    private fun validEmail(email: String):Boolean{
+        val pattern:Pattern= Pattern.compile("^\\S+@\\S+\\.\\S+\$")
+        val matcher:Matcher=pattern.matcher(email)
+        return matcher.matches()
+    }
+    private fun getContactFromInputFieldsToSave():ContactDataClass?{
         val firstName:String=findViewById<EditText>(R.id.first_name).text.toString().trim()
         val lasName:String=findViewById<EditText>(R.id.last_name).text.toString().trim()
         val number=ArrayList<String>()
-        val number1=findViewById<EditText>(R.id.number1).text.toString().trim()
+        val number1:String=findViewById<EditText>(R.id.number1).text.toString().trim()
+        if(number1.length>0)
+            if(!validateMobileNumber(number1)) {
+                Toast.makeText(this, "Invalid Number1", Toast.LENGTH_SHORT).show()
+                return null
+            }
         val number2=findViewById<EditText>(R.id.number2).text.toString().trim()
+        if(number2.length>0)
+            if(!validateMobileNumber(number2)) {
+                Toast.makeText(this, "Invalid Number2", Toast.LENGTH_SHORT).show()
+                return null
+            }
         val email:String=findViewById<EditText>(R.id.email).text.toString().trim()
+        if(!validEmail(email)){
+            Toast.makeText(this, "Invalid email", Toast.LENGTH_SHORT).show()
+            return null
+        }
         val bitmap=(findViewById<ImageView>(R.id.user_ic).drawable as BitmapDrawable).bitmap
         val stream=ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG,90,stream)
@@ -163,36 +202,41 @@ class CreateAndEditContactActivity : AppCompatActivity() {
 
     private fun onSaveNewContact(){
         val detailContact=getContactFromInputFieldsToSave()
-        if(detailContact.firstName != "" || detailContact.lastName != "") {
-            if(detailContact.firstName==""){
-                detailContact.firstName=detailContact.lastName
-                detailContact.lastName=""
+        if(detailContact!=null) {
+            if (detailContact.firstName != "" || detailContact.lastName != "") {
+                if (detailContact.firstName == "") {
+                    detailContact.firstName = detailContact.lastName
+                    detailContact.lastName = ""
+                }
+                GlobalScope.launch {
+                    addNewContactToDatabase(detailContact)
+                    saveProfilePicture(convertUriToBitmap(), detailContact)
+                }
+                Database.list.add(detailContact)
+                finish()
+            } else {
+                Toast.makeText(this, "Invalid", Toast.LENGTH_SHORT).show()
             }
-//            addNewContactToDatabase(detailContact)
-            GlobalScope.launch {
-                addNewContactToDatabase(detailContact)
-                saveProfilePicture(convertUriToBitmap(),detailContact)
-            }
-            Database.list.add(detailContact)
-        }else{
-            Toast.makeText(this, "Invalid", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun onSaveEditContact(){
         try {
             val detailContact = getContactFromInputFieldsToSave()
-            var contact = intent.getSerializableExtra("contact") as ContactDataClass
-            detailContact.dbID = contact.dbID
-            detailContact.favorite = contact.favorite
-            GlobalScope.launch {
-                Database.update(detailContact)
-            }
+            if(detailContact!=null) {
+                var contact = intent.getSerializableExtra("contact") as ContactDataClass
+                detailContact.dbID = contact.dbID
+                detailContact.favorite = contact.favorite
+                GlobalScope.launch {
+                    Database.update(detailContact)
+                }
                 saveProfilePicture(convertUriToBitmap(), detailContact)
-            Database.getAlldata()
+                Database.getAlldata()
+            }
         }catch (e:Exception){
             Log.i("", "onSaveEditContact: ${e.printStackTrace()}")
         }
+        finish()
     }
 
     private fun onClickSave(option:Int){
@@ -201,7 +245,6 @@ class CreateAndEditContactActivity : AppCompatActivity() {
                 onSaveNewContact()
             else
                 onSaveEditContact()
-            finish()
         }
     }
 
@@ -231,15 +274,17 @@ class CreateAndEditContactActivity : AppCompatActivity() {
                 number2.setText(contact.number[1])
         }
         email.setText(contact.email)
-
-        val directory = applicationContext.filesDir
-        val imageDirectory = File(directory, "profileImages")
-        val imgFile = File(imageDirectory, "${firstName.text.toString() + lastName.text.toString()}.png")
-        if(imgFile.exists()) {
-            profile.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
-            findViewById<CardView>(R.id.custom_profile).visibility= View.VISIBLE
-            findViewById<ImageView>(R.id.default_user_ic).visibility=View.GONE
-        }
+        try {
+            val directory = applicationContext.filesDir
+            val imageDirectory = File(directory, "profileImages")
+            val imgFile =
+                File(imageDirectory, "${firstName.text.toString() + lastName.text.toString()}.png")
+            if (imgFile.exists()) {
+                profile.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
+                findViewById<CardView>(R.id.custom_profile).visibility = View.VISIBLE
+                findViewById<ImageView>(R.id.default_user_ic).visibility = View.GONE
+            }
+        }catch (e:IOException){}
     }
 
     private suspend fun addNewContactToDatabase(detailContact: ContactDataClass){
