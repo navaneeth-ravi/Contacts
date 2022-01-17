@@ -5,7 +5,7 @@
         android:icon="@drawable/search"
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        android:title="@string/todo" />
+        android:title="@string/search" />
     <item android:id="@+id/sort"
         android:title="@string/sort_by"
         app:showAsAction="never">
@@ -18,4 +18,7 @@
                 app:showAsAction="never"/>
         </menu>
     </item>
+    <item android:id="@+id/dummy"
+        app:showAsAction="never"
+        android:title="add dummy contacts" />
 </menu>

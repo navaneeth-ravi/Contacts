@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.IOException
 import kotlin.properties.Delegates
 
 class ContactDetailsActivity : AppCompatActivity(){
@@ -55,13 +56,15 @@ class ContactDetailsActivity : AppCompatActivity(){
     private fun setProfile(){
         val imageView=findViewById<ImageView>(R.id.user_ic)
         val cardView=findViewById<CardView>(R.id.custom_profile)
-        val directory = applicationContext.filesDir
-        val imageDirectory = File(directory, "profileImages")
-        val imgFile = File(imageDirectory, "${contact.firstName + contact.lastName}.png")
-        if(imgFile.exists()) {
-            imageView.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
-            cardView.visibility=View.VISIBLE
-        }
+        try {
+            val directory = applicationContext.filesDir
+            val imageDirectory = File(directory, "profileImages")
+            val imgFile = File(imageDirectory, "${contact.firstName + contact.lastName}.png")
+            if (imgFile.exists()) {
+                imageView.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
+                cardView.visibility = View.VISIBLE
+            }
+        }catch (e: IOException){}
     }
     private fun mailLayout(){
         findViewById<LinearLayout>(R.id.mail_layout).setOnClickListener {

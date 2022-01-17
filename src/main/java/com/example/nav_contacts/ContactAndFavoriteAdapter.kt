@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
+import java.io.IOException
 import kotlin.random.Random
 
 
@@ -28,7 +29,6 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var number:
     var values:ArrayList<ContactDataClass>
 
     init {
-//        Database.getAlldata()
         values=assignAdapterData()
     }
     inner class ViewHolderForContact(itemView: View):RecyclerView.ViewHolder(itemView){
@@ -67,7 +67,7 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var number:
 
     private fun onBindViewHolderContact(holder: ViewHolderForContact, position: Int){
         holder.button.text = values[position % values.size].firstName[0].toString()
-        val sortFirstContactName=values[position % values.size].lastName + " " + values[position % values.size].firstName+values[position].dbID
+        val sortFirstContactName=values[position % values.size].lastName + " " + values[position % values.size].firstName
         val sortLastContactName=values[position % values.size].firstName + " " + values[position % values.size].lastName
         holder.name.text = sortFirstContactName
         if (!ContactsDisplayFragment.SORT_BY_FIRST_NAME) {
@@ -91,32 +91,33 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var number:
         }
         holder.button.setOnClickListener { showContactDetails(it, position) }
         val fileName=values[position % values.size].lastName+ values[position % values.size].firstName
-        val directory = context?.filesDir
-        val imageDirectory = File(directory, "profileImages")
-        val imgFile = File(imageDirectory, "$fileName.png")
-        if(imgFile.exists()) {
-            holder.profileImage.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
-        }else{
-            holder.defaultUserIcon.visibility=View.VISIBLE
-            holder.profileCard.visibility=View.GONE
-        }
+        try {
+            val directory = context?.filesDir
+            val imageDirectory = File(directory, "profileImages")
+            val imgFile = File(imageDirectory, "$fileName.png")
+            if(imgFile.exists()) {
+                holder.profileImage.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
+            }else{
+                holder.defaultUserIcon.visibility=View.VISIBLE
+                holder.profileCard.visibility=View.GONE
+            }
+        }catch (e:IOException){}
     }
-
     private fun onBindViewHolderFavorite(holder: ViewHolderForFavorite, position: Int){
         val firstName = values[position % values.size].firstName
         val lastName = values[position % values.size].lastName
-
-        val directory = context?.filesDir
-        val imageDirectory = File(directory, "profileImages")
-        val imgFile = File(imageDirectory, "${firstName + lastName}.png")
-
-        if(imgFile.exists()){
-            holder.letter.visibility=View.GONE
-            holder.userIcon.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
-            holder.userIconLayout.visibility=View.VISIBLE
-        }else
-            holder.letter.text= values[position % values.size].firstName[0].toString().uppercase()
-
+        try {
+            val directory = context?.filesDir
+            val imageDirectory = File(directory, "profileImages")
+            val imgFile = File(imageDirectory, "${firstName + lastName}.png")
+            if (imgFile.exists()) {
+                holder.letter.visibility = View.GONE
+                holder.userIcon.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
+                holder.userIconLayout.visibility = View.VISIBLE
+            } else
+                holder.letter.text =
+                    values[position % values.size].firstName[0].toString().uppercase()
+        }catch (e:IOException){}
         val sortFirstContactName=values[position % values.size].lastName + " " + values[position % values.size].firstName
         val sortLastContactName=values[position % values.size].firstName + " " + values[position % values.size].lastName
         if(!ContactsDisplayFragment.SORT_BY_FIRST_NAME) {
@@ -125,7 +126,6 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var number:
         else {
             holder.contactName.text = sortLastContactName
         }
-//            setRandomBackgroundColor(holder.card)
         holder.edit.setOnClickListener { showContactDetails(it,position) }
         holder.card.setOnClickListener{
             val phone:String

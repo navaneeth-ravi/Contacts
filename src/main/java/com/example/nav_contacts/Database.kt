@@ -5,13 +5,22 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 
 class Database {
-    //context pass panna koodathu
     companion object {
         var list: ArrayList<ContactDataClass> = ArrayList()
         var favList: ArrayList<ContactDataClass> = ArrayList()
         lateinit var database: DBHelper
         lateinit var writeableDatabase: SQLiteDatabase
         lateinit var readableDatabase: SQLiteDatabase
+
+        private val firstName= arrayOf("Police","Goverment","SIM")
+        private val lastName= arrayOf("","Ambulance","Complaint")
+        private val numberdum= arrayOf("100","108","199")
+        fun dummy(){
+            for (i in firstName.indices){
+                addContactToDatabaseTable(firstName[i],lastName[i],numberdum[i], number2 = "empty", favorite = true)
+            }
+            getAlldata()
+        }
         fun makeFavResult() {
             favList = ArrayList()
             for (i in list)
