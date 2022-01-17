@@ -96,9 +96,7 @@ class Database {
                     "${DBHelper.ID}=?",
                     arrayOf((contact.dbID.toString()))
                 )
-            } catch (e: Exception) {
-//                Toast.makeText(context, "exception", Toast.LENGTH_SHORT).show()
-            }
+            } catch (e: Exception) {}
 
         }
 
@@ -117,7 +115,6 @@ class Database {
                 if (!number2.equals("empty"))
                     number.add(number2)
                 val favorites = cursor.getString(5).toInt() == 1
-//            Toast.makeText(context, "$favorites", Toast.LENGTH_SHORT).show()
                 val email = cursor.getString(6)
                 val profileImageId = cursor.getString(7)
                 contactList.add(
@@ -159,53 +156,9 @@ class Database {
             values.put(DBHelper.FAVORITE, favorite)
             values.put(DBHelper.PROFILE_IMAGE, "$firstName$lastName.png")
             writeableDatabase.insert(DBHelper.TABLE_NAME, null, values)
-//        Toast.makeText(context, "created $firstName success", Toast.LENGTH_SHORT).show()
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//        init {
-//            val number: ArrayList<String> = ArrayList()
-//            number.add("8838900839")
-//            number.add("7539916246")
-//            list.add(Contact("Navaneethan", "Ravi", number, "abc@gmail.com", true))
-//            list.add(Contact("vishnu", "N", number, "darls@nav.com", true))
-//            list.add(Contact("Naani", "N", number, "mail"))
-//            list.add(Contact("Adhi", "Ravi", number, "mail"))
-//            list.add(Contact("Ravi", "J", number, "mail"))
-//            list.add(Contact("Rajakumari", "R", number, "mail"))
-//            list.add(Contact("Rajini", "Super", number, "mail"))
-//
-//            for (i in list) {
-//                Log.i("abc", "getFavorites:for ")
-//                if (i.favorite) {
-//                    Log.i("abc", "getFavorites: ")
-//                    favList.add(i)
-//                }
-//            }
-//        }
 
 
 
