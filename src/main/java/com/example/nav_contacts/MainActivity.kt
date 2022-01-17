@@ -2,6 +2,7 @@ package com.example.nav_contacts
 
 
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -23,23 +24,22 @@ class MainActivity : AppCompatActivity() {
     lateinit var displayContactsFragment: ContactsDisplayFragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Database(this).getAlldata()
-
-//        menu
-//        MenuItemCompat.getActionProvider()
+        Database.openDatabase(this)
+        Database.getAlldata()
         setContentView(R.layout.activity_main)
+
         if(savedInstanceState!=null){
             gridForRecycler=savedInstanceState.getBoolean("grid")
             searchText=savedInstanceState.getString("search","")
         }
 
         supportFragmentManager.popBackStack()
-        portrait = findViewById<LinearLayout>(R.id.activity_main_portrait) != null
+        portrait = getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE
 
         if(savedInstanceState==null) {
             displayContactsFragment=ContactsDisplayFragment()
             supportFragmentManager.beginTransaction()
-                .add(R.id.container12,displayContactsFragment).commit()
+                .add(R.id.container_for_display_contact_fragments,displayContactsFragment).commit()
         }
         onclickButtons()
     }
@@ -74,10 +74,10 @@ class MainActivity : AppCompatActivity() {
     }
     private fun setSearchListener(search: SearchView){
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            var searchAdapterValues=ArrayList<Contact>()
+            var searchAdapterValues=ArrayList<ContactDataClass>()
             override fun onQueryTextChange(search: String?): Boolean {
                 searchAdapterValues.clear()
-                val adapter:MyAdapter=(displayContactsFragment.recyler.adapter as MyAdapter)
+                val adapter:ContactAndFavoriteAdapter=(displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter)
                 if(search!=null)
                     if(!gridForRecycler) {
                         Database.list.forEach() {
@@ -128,9 +128,12 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode==CallPermission.CALL_PERMISSION_CODE)
-            if(grantResults.isNotEmpty() &&(grantResults[0]== PackageManager.PERMISSION_GRANTED))
+        if(requestCode==PermissionUtils.CALL_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 Toast.makeText(this, "Permission allowed", Toast.LENGTH_SHORT).show()
+
+            }
+        }
     }
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -162,7 +165,7 @@ class MainActivity : AppCompatActivity() {
             favorites.setTextColor(getColor(R.color.blue))
             contacts.setTextColor(getColor(R.color.black))
             supportFragmentManager.popBackStack()
-            supportFragmentManager.beginTransaction().replace(R.id.container12,displayContactsFragment/*FavoritesFragment()*/).commit()
+            supportFragmentManager.beginTransaction().replace(R.id.container_for_display_contact_fragments,displayContactsFragment/*FavoritesFragment()*/).commit()
         }
         contacts.setOnClickListener {
             displayContactsFragment=ContactsDisplayFragment()
@@ -171,7 +174,7 @@ class MainActivity : AppCompatActivity() {
             favorites.setTextColor(getColor(R.color.black))
             contacts.setTextColor(getColor(R.color.blue))
             supportFragmentManager.popBackStack()
-            supportFragmentManager.beginTransaction().replace(R.id.container12,displayContactsFragment).commit()
+            supportFragmentManager.beginTransaction().replace(R.id.container_for_display_contact_fragments,displayContactsFragment).commit()
         }
     }
 

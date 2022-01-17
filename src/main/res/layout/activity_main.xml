@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:layout_weight="9">
         <FrameLayout
-            android:id="@+id/container12"
+            android:id="@+id/container_for_display_contact_fragments"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center">
@@ -29,7 +29,7 @@
             android:id="@+id/fav"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:text="Favorites"
+            android:text="@string/favorites"
             android:layout_height="match_parent"
             android:backgroundTint="@color/white"
             style="?android:attr/borderlessButtonStyle"/>
@@ -37,7 +37,7 @@
             android:id="@+id/contacts"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:text="Contacts"
+            android:text="@string/contacts"
             android:textColor="@color/blue"
             android:layout_height="match_parent"
             android:backgroundTint="@color/white"

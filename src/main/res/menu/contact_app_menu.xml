@@ -5,16 +5,16 @@
         android:icon="@drawable/search"
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        android:title="TODO" />
+        android:title="@string/todo" />
     <item android:id="@+id/sort"
-        android:title="sort by"
+        android:title="@string/sort_by"
         app:showAsAction="never">
         <menu>
             <item android:id="@+id/first_name"
-                android:title="First Name "
+                android:title="@string/first_name"
                 app:showAsAction="never"/>
             <item android:id="@+id/last_name"
-                android:title="Last Name "
+                android:title="@string/last_name"
                 app:showAsAction="never"/>
         </menu>
     </item>
