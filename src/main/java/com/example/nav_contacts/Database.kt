@@ -12,14 +12,24 @@ class Database {
         lateinit var writeableDatabase: SQLiteDatabase
         lateinit var readableDatabase: SQLiteDatabase
 
-        private val firstName= arrayOf("Police","Goverment","SIM")
-        private val lastName= arrayOf("","Ambulance","Complaint")
-        private val numberdum= arrayOf("100","108","199")
+        private val firstName= arrayOf("Police","Goverment","SIM","IRCTC","Fire","Women's ","Corona TN","Traffic"," Navaneethan")
+        private val lastName= arrayOf("","Ambulance","Complaint","HelpLine","Service","HelpLine","HelpLine","HelpLine","")
+        private val numberdum= arrayOf("100","108","199","1800111139","101","1091","+91-11-23978046","1073","8838900839")
+        private var isInsertedToDatabase= false
         fun dummy(){
-            for (i in firstName.indices){
-                addContactToDatabaseTable(firstName[i],lastName[i],numberdum[i], number2 = "empty", favorite = true)
+            if(!isInsertedToDatabase) {
+                for (i in firstName.indices) {
+                    addContactToDatabaseTable(
+                        firstName[i],
+                        lastName[i],
+                        numberdum[i],
+                        number2 = "empty",
+                        favorite = true
+                    )
+                }
+                isInsertedToDatabase = true
+                getAlldata()
             }
-            getAlldata()
         }
         fun makeFavResult() {
             favList = ArrayList()
@@ -96,7 +106,9 @@ class Database {
                     "${DBHelper.ID}=?",
                     arrayOf((contact.dbID.toString()))
                 )
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+//                Toast.makeText(context, "exception", Toast.LENGTH_SHORT).show()
+            }
 
         }
 
@@ -115,6 +127,7 @@ class Database {
                 if (!number2.equals("empty"))
                     number.add(number2)
                 val favorites = cursor.getString(5).toInt() == 1
+//            Toast.makeText(context, "$favorites", Toast.LENGTH_SHORT).show()
                 val email = cursor.getString(6)
                 val profileImageId = cursor.getString(7)
                 contactList.add(
@@ -156,6 +169,7 @@ class Database {
             values.put(DBHelper.FAVORITE, favorite)
             values.put(DBHelper.PROFILE_IMAGE, "$firstName$lastName.png")
             writeableDatabase.insert(DBHelper.TABLE_NAME, null, values)
+//        Toast.makeText(context, "created $firstName success", Toast.LENGTH_SHORT).show()
         }
     }
 }

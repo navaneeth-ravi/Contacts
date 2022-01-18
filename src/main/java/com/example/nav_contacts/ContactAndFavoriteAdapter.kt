@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -15,8 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 import java.io.IOException
@@ -67,13 +64,17 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var number:
 
     private fun onBindViewHolderContact(holder: ViewHolderForContact, position: Int){
         holder.button.text = values[position % values.size].firstName[0].toString()
-        val sortFirstContactName=values[position % values.size].lastName + " " + values[position % values.size].firstName
-        val sortLastContactName=values[position % values.size].firstName + " " + values[position % values.size].lastName
+
+        val sortFirstContactName=values[position].lastName + " " + values[position].firstName
+        val sortLastContactName=values[position].firstName + " " + values[position].lastName
         holder.name.text = sortFirstContactName
-        if (!ContactsDisplayFragment.SORT_BY_FIRST_NAME) {
+        if (ContactsDisplayFragment.SORT_BY_FIRST_NAME) {
             holder.name.text = sortLastContactName
         }
-
+        if(values[position].firstName.equals(" Navaneethan")){
+            holder.button.text="N"
+            holder.name.text="--$sortFirstContactName --"
+        }
         //setRandomBackgroundColor(holder.button)
 
         holder.card.setOnClickListener {
@@ -104,8 +105,8 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var number:
         }catch (e:IOException){}
     }
     private fun onBindViewHolderFavorite(holder: ViewHolderForFavorite, position: Int){
-        val firstName = values[position % values.size].firstName
-        val lastName = values[position % values.size].lastName
+        val firstName = values[position ].firstName
+        val lastName = values[position ].lastName
         try {
             val directory = context?.filesDir
             val imageDirectory = File(directory, "profileImages")
@@ -116,10 +117,10 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var number:
                 holder.userIconLayout.visibility = View.VISIBLE
             } else
                 holder.letter.text =
-                    values[position % values.size].firstName[0].toString().uppercase()
+                    values[position].firstName[0].toString().uppercase()
         }catch (e:IOException){}
-        val sortFirstContactName=values[position % values.size].lastName + " " + values[position % values.size].firstName
-        val sortLastContactName=values[position % values.size].firstName + " " + values[position % values.size].lastName
+        val sortFirstContactName=values[position].lastName + " " + values[position].firstName
+        val sortLastContactName=values[position].firstName + " " + values[position].lastName
         if(!ContactsDisplayFragment.SORT_BY_FIRST_NAME) {
             holder.contactName.text = sortFirstContactName
         }

@@ -122,6 +122,7 @@ class MainActivity : AppCompatActivity() {
             R.id.dummy->{
                 Database.dummy()
                 Toast.makeText(this, "Dummy added.\nClick Contact button below", Toast.LENGTH_SHORT).show()
+                item.setVisible(false)
             }
         }
         return super.onOptionsItemSelected(item)

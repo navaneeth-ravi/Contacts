@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
@@ -57,8 +59,33 @@ class CreateAndEditContactActivity : AppCompatActivity() {
         onClickCloseButton()
         onClickAddImageIcon()
 
+        val number1EditField=findViewById<EditText>(R.id.number1)
+        val number2EditField=findViewById<EditText>(R.id.number2)
+        val emailEditField=findViewById<EditText>(R.id.email)
+        inputsValidationForMobileNumberAndEmail(number1EditField)
+        inputsValidationForMobileNumberAndEmail(number2EditField)
+        inputsValidationForMobileNumberAndEmail(emailEditField,true)
     }
+    private fun inputsValidationForMobileNumberAndEmail(editTextMobileNumber: EditText,emailValidate:Boolean=false){
+        editTextMobileNumber.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if(emailValidate){
+                    if(p0.toString().isNotEmpty() &&!validEmail(p0.toString())){
+                        editTextMobileNumber.setError("Invalid Email-id")
+                    }
+                }else{
+                    if(p0.toString().isNotEmpty() &&!validateMobileNumber(p0.toString())){
+                        editTextMobileNumber.setError("Invalid, Must be \nStart with 6-9\nlength should be 10")
+                    }
+                }
+            }
 
+            override fun afterTextChanged(p0: Editable?) {
+            }
+        })
+    }
     private fun onClickAddImageIcon(){
         findViewById<Button>(R.id.add_photo).setOnClickListener {
             if(!PermissionUtils.hasPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)){
@@ -150,26 +177,38 @@ class CreateAndEditContactActivity : AppCompatActivity() {
             }
         }
     }
-    private fun getContactFromInputFieldsToSave():ContactDataClass{
+    private fun validateMobileNumber(phone:String):Boolean{
+        val pattern:Pattern= Pattern.compile("[6-9][0-9]{9}")
+        val matcher:Matcher=pattern.matcher(phone)
+        return matcher.matches()
+    }
+    private fun validEmail(email: String):Boolean{
+        val pattern:Pattern= Pattern.compile("^\\S+@\\S+\\.\\S+\$")
+        val matcher:Matcher=pattern.matcher(email)
+        return matcher.matches()
+    }
+    private fun getContactFromInputFieldsToSave():ContactDataClass?{
         val firstName:String=findViewById<EditText>(R.id.first_name).text.toString().trim()
         val lasName:String=findViewById<EditText>(R.id.last_name).text.toString().trim()
         val number=ArrayList<String>()
         val number1:String=findViewById<EditText>(R.id.number1).text.toString().trim()
-        if(number1.length>0)
+        if(number1.isNotEmpty())
             if(!validateMobileNumber(number1)) {
                 Toast.makeText(this, "Invalid Number1", Toast.LENGTH_SHORT).show()
                 return null
             }
         val number2=findViewById<EditText>(R.id.number2).text.toString().trim()
-        if(number2.length>0)
+        if(number2.isNotEmpty())
             if(!validateMobileNumber(number2)) {
                 Toast.makeText(this, "Invalid Number2", Toast.LENGTH_SHORT).show()
                 return null
             }
         val email:String=findViewById<EditText>(R.id.email).text.toString().trim()
-        if(!validEmail(email)){
-            Toast.makeText(this, "Invalid email", Toast.LENGTH_SHORT).show()
-            return null
+        if(email.isNotEmpty()) {
+            if (!validEmail(email)) {
+                Toast.makeText(this, "Invalid email", Toast.LENGTH_SHORT).show()
+                return null
+            }
         }
         val bitmap=(findViewById<ImageView>(R.id.user_ic).drawable as BitmapDrawable).bitmap
         val stream=ByteArrayOutputStream()
@@ -273,15 +312,10 @@ class CreateAndEditContactActivity : AppCompatActivity() {
             detailContact.number[1], detailContact.email, false)
         Database.getAlldata()
     }
-    suspend fun addd(detailContact: ContactDataClass){
-
-    }
     fun generateThumb(bitmap: Bitmap,THUMB_SIZE:Int):Bitmap{
         val ratioSquare: Double
-        val bitmapHeight: Int
-        val bitmapWidth: Int
-        bitmapHeight = bitmap.height
-        bitmapWidth = bitmap.width
+        val bitmapHeight: Int = bitmap.height
+        val bitmapWidth: Int = bitmap.width
         ratioSquare = (bitmapHeight * bitmapWidth / THUMB_SIZE).toDouble()
         if (ratioSquare <= 1) return bitmap
         val ratio = Math.sqrt(ratioSquare)

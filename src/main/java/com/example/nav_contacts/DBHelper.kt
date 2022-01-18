@@ -1,8 +1,5 @@
 package com.example.nav_contacts
 
-//class DBHelper {
-//}
-
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -26,22 +23,6 @@ class DBHelper(val context: Context, factory: CursorFactory?) :
                 EMAIL + " TEXT," +
                 PROFILE_IMAGE + " TEXT" +")")
         db.execSQL(query)
-    }
-    private fun addDummyContacts(firstName: String,
-                                 lastName: String,
-                                 number1: String = "",
-                                 number2: String = "",
-                                 email: String = "",
-                                 favorite: Boolean){
-        val values = ContentValues()
-        values.put(DBHelper.FIRST_NAME, firstName)
-        values.put(DBHelper.LAST_NAME, lastName)
-        values.put(DBHelper.NUMBER1, number1)
-        values.put(DBHelper.NUMBER2, number2)
-        values.put(DBHelper.EMAIL, email)
-        values.put(DBHelper.FAVORITE, favorite)
-        values.put(DBHelper.PROFILE_IMAGE, "$firstName$lastName.png")
-        writableDatabase.insert(DBHelper.TABLE_NAME, null, values)
     }
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
         Toast.makeText(context, "update", Toast.LENGTH_SHORT).show()
