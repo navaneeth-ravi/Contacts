@@ -3,17 +3,24 @@
     package="com.example.nav_contacts">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/contacts_24"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.NavContacts">
+        <provider
+            android:name=".MyContentProvider"
+            android:authorities="com.enoda.contact.provider"
+            android:enabled="true"
+            android:exported="true"></provider>
+
         <activity
             android:name=".CreateAndEditContactActivity"
             android:exported="false"
-            android:theme="@style/Theme1"/>
+            android:theme="@style/Theme1" />
         <activity
             android:name=".ContactDetailsActivity"
             android:exported="false"

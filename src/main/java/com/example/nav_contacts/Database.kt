@@ -1,8 +1,10 @@
 package com.example.nav_contacts
 
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.widget.Toast
 
 class Database {
     companion object {
@@ -16,9 +18,18 @@ class Database {
         private val lastName= arrayOf("","Ambulance","Complaint","HelpLine","Service","HelpLine","HelpLine","HelpLine","")
         private val numberdum= arrayOf("100","108","199","1800111139","101","1091","+91-11-23978046","1073","8838900839")
         private var isInsertedToDatabase= false
-        fun dummy(){
+        fun dummy(contentResolver: ContentResolver){
             if(!isInsertedToDatabase) {
                 for (i in firstName.indices) {
+                    val values= ContentValues()
+                    values.put(MyContentProvider.FIRST_NAME,firstName[i])
+                    values.put(MyContentProvider.LAST_NAME,lastName[i])
+                    values.put(MyContentProvider.NUMBER1, numberdum[i])
+                    values.put(MyContentProvider.NUMBER2,"empty")
+                    values.put(MyContentProvider.EMAIL,"")
+                    values.put(MyContentProvider.FAVORITE,1)
+                    values.put(MyContentProvider.PROFILE_IMAGE, "${firstName[i]}${lastName[i]}.png")
+                    contentResolver.insert(MyContentProvider.CONTENT_URI,values)
                     addContactToDatabaseTable(
                         firstName[i],
                         lastName[i],
@@ -28,7 +39,7 @@ class Database {
                     )
                 }
                 isInsertedToDatabase = true
-                getAlldata()
+                MainActivity.getAllContactDataFromDatabase(contentResolver)
             }
         }
         fun makeFavResult() {
@@ -90,12 +101,11 @@ class Database {
             val cv = ContentValues()
             cv.put(DBHelper.FIRST_NAME, contact.firstName)
             cv.put(DBHelper.LAST_NAME, contact.lastName)
-            if (contact.number.isNotEmpty()) {
                 cv.put(DBHelper.NUMBER1, contact.number[0])
-                if (contact.number.size == 2) {
+//                if (contact.number.size == 2) {
                     cv.put(DBHelper.NUMBER2, contact.number[1])
-                }
-            }
+//                }
+
             cv.put(DBHelper.EMAIL, contact.email)
             cv.put(DBHelper.FAVORITE, contact.favorite)
             cv.put(DBHelper.PROFILE_IMAGE, "${contact.firstName + contact.lastName}.png")
@@ -111,6 +121,7 @@ class Database {
             }
 
         }
+
 
         fun getAlldata() {
             val contactList = ArrayList<ContactDataClass>()
@@ -150,6 +161,7 @@ class Database {
         fun delete(contact: ContactDataClass) {
             val value = (contact.dbID).toString()
             writeableDatabase.delete(DBHelper.TABLE_NAME, DBHelper.ID + "=?", arrayOf(value))
+
         }
 
         fun addContactToDatabaseTable(
@@ -173,6 +185,49 @@ class Database {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        init {
+//            val number: ArrayList<String> = ArrayList()
+//            number.add("8838900839")
+//            number.add("7539916246")
+//            list.add(Contact("Navaneethan", "Ravi", number, "abc@gmail.com", true))
+//            list.add(Contact("vishnu", "N", number, "darls@nav.com", true))
+//            list.add(Contact("Naani", "N", number, "mail"))
+//            list.add(Contact("Adhi", "Ravi", number, "mail"))
+//            list.add(Contact("Ravi", "J", number, "mail"))
+//            list.add(Contact("Rajakumari", "R", number, "mail"))
+//            list.add(Contact("Rajini", "Super", number, "mail"))
+//
+//            for (i in list) {
+//                Log.i("abc", "getFavorites:for ")
+//                if (i.favorite) {
+//                    Log.i("abc", "getFavorites: ")
+//                    favList.add(i)
+//                }
+//            }
+//        }
 
 
 

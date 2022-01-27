@@ -1,11 +1,8 @@
 package com.example.nav_contacts
 
 
-import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
 
 class PermissionUtils() {
     companion object{
@@ -20,6 +17,5 @@ class PermissionUtils() {
         fun hasPermission(activity: Activity,permission: String):Boolean{
             return activity.checkSelfPermission(permission)==PackageManager.PERMISSION_GRANTED
         }
-//        arrayOf(Manifest.permission.CALL_PHONE)
     }
 }
