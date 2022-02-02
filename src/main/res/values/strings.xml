@@ -43,7 +43,7 @@
     <string name="permission_allowed">Permission allowed</string>
     <string name="invalid_email">Invalid Email-id</string>
     <string name="invalid_number">Invalid, Must be \n Start with 6–9 \n length should be 10</string>
-    <string name="invalid_number1">Invalid Number1</string>
+    <string name="invalid_number1">Invalid Number-1</string>
     <string name="invalid_number2">Invalid Number2</string>
     <string name="invalid">Invalid</string>
     <string name="file_missing">File Missing</string>

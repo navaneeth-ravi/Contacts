@@ -1,9 +1,9 @@
 package com.example.nav_contacts
 
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
@@ -21,25 +21,21 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-
-class ContactsDisplayFragment : Fragment(){
+class ContactsDisplayFragment : Fragment() {
     lateinit var recyler:RecyclerView
     private lateinit var contactDisplayView: View
     private lateinit var parent: MainActivity
-    private lateinit var contentResolver: ContentResolver
     companion object {
         const val CONTACTS=0
         const val FAVORITES=1
         var SORT_BY_FIRST_NAME=true
         const val SORT_KEY="sort"
-        private const val EMPTY_STRING="empty"
-    }
-    fun isRecyclerInitialized():Boolean{
-        return this::recyler.isInitialized
-    }
-    fun setContentResolver(contentResolver: ContentResolver) {
-        this.contentResolver=contentResolver
+        const val EMPTY_STRING="empty"
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +47,12 @@ class ContactsDisplayFragment : Fragment(){
             onRestore(savedInstanceState)
         }
         onClickFloatingButtonAddContact()
+        val adapter=recyler.adapter as ContactAndFavoriteAdapter
+        if (parent.gridForRecycler){
+            adapter.setAdapterFavoritesData( parent.favoriteList )
+        } else if (!parent.gridForRecycler) {
+            adapter.setAdapterContactData(parent.contactList)
+        }
         return contactDisplayView
     }
     private fun initializeRecyclerView(){
@@ -81,20 +83,37 @@ class ContactsDisplayFragment : Fragment(){
             LinearLayoutManager(activity)
         }
     }
-    private val createNewContact=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+    private val doCreateNewContact=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if (it.resultCode==Activity.RESULT_OK) {
-            val adapter=recyler.adapter as ContactAndFavoriteAdapter
-            adapter.notifyDataSetChanged()
+            GlobalScope.launch(Dispatchers.IO) {
+                val cursor=DatabaseFunctionalities.getAllContactDataFromDatabase()
+                withContext(Dispatchers.Main){
+                    updateAdapterData(cursor)
+                }
+            }
+        }
+    }
+    private fun updateAdapterData( cursor:Cursor? ){
+        parent.getAllContacts(cursor)
+        parent.contactList.sortBy { it.firstName.uppercase() }
+        val adapter=recyler.adapter as ContactAndFavoriteAdapter
+        for(i in 0 until parent.contactList.size){
+            if(adapter.values[i].dbID!= parent.contactList[i].dbID){
+                adapter.values.add(i,parent.contactList[i])
+                adapter.notifyItemInserted(i)
+            }
         }
     }
     private fun onClickFloatingButtonAddContact(){
         contactDisplayView.findViewById<View>(R.id.edit_icon).setOnClickListener {
-            val intent=Intent(this.context,CreateAndEditContactActivity::class.java)
-            intent.putExtra(CreateAndEditContactActivity.OPTION,CreateAndEditContactActivity.CREATE)
-            createNewContact.launch(intent)
+            createNewContact()
         }
     }
-
+    private fun createNewContact(){
+        val intent=Intent(this.context,CreateAndEditContactActivity::class.java)
+        intent.putExtra(CreateAndEditContactActivity.OPTION,CreateAndEditContactActivity.CREATE)
+        doCreateNewContact.launch(intent)
+    }
     private fun onRestore(savedInstanceState: Bundle){
         (context as MainActivity).displayContactsFragment=this
         if (!savedInstanceState.getBoolean(SORT_KEY)) {
@@ -102,40 +121,29 @@ class ContactsDisplayFragment : Fragment(){
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        val adapter=recyler.adapter as ContactAndFavoriteAdapter
-        if (!(activity as MainActivity).gridForRecycler) {
-            adapter.setAdapterContactData(MainActivity.contactList)
-            adapter.notifyDataSetChanged()
-        } else if ((activity as MainActivity).gridForRecycler){
-            adapter.setAdapterFavoritesData(MainActivity.favoriteContactList)
-            adapter.notifyDataSetChanged()
-        }
-    }
     fun sortByFirstName(){
         val adapter=recyler.adapter as ContactAndFavoriteAdapter
         SORT_BY_FIRST_NAME=true
         val sortedList:List<ContactDataClass>
         if (!parent.gridForRecycler) {
-            sortedList=MainActivity.contactList.sortedBy { it.firstName }
+            sortedList=parent.contactList.sortedBy { it.firstName.uppercase() }
             adapter.setAdapterContactData(ArrayList(sortedList))
         } else {
-            sortedList=MainActivity.favoriteContactList.sortedBy { it.firstName }
+            sortedList=parent.favoriteList.sortedBy { it.firstName.uppercase() }
             adapter.setAdapterFavoritesData(ArrayList(sortedList))
         }
         adapter.notifyItemRangeChanged(0,sortedList.size)
     }
 
     fun sortByLastName(){
-        val adapter=recyler.adapter as ContactAndFavoriteAdapter
-        SORT_BY_FIRST_NAME=false
+        val adapter = recyler.adapter as ContactAndFavoriteAdapter
+        SORT_BY_FIRST_NAME = false
         val sortedList:List<ContactDataClass>
         if (!parent.gridForRecycler) {
-            sortedList=MainActivity.contactList.sortedBy { it.lastName }
+            sortedList = parent.contactList.sortedBy { it.lastName.uppercase() }
             adapter.setAdapterContactData(ArrayList(sortedList))
         } else {
-            sortedList=MainActivity.favoriteContactList.sortedBy { it.lastName }
+            sortedList = parent.favoriteList.sortedBy { it.lastName.uppercase() }
             adapter.setAdapterFavoritesData(ArrayList(sortedList))
         }
         adapter.notifyItemRangeChanged(0,sortedList.size)
@@ -145,25 +153,25 @@ class ContactsDisplayFragment : Fragment(){
         super.onSaveInstanceState(outState)
         outState.putBoolean(SORT_KEY, SORT_BY_FIRST_NAME)
     }
-
+    private fun removeContactFromFavoriteGesture(viewHolder: RecyclerView.ViewHolder){
+        val adapter = recyler.adapter as ContactAndFavoriteAdapter
+        val data = adapter.values[viewHolder.adapterPosition]
+        val position=viewHolder.adapterPosition
+        data.favorite = false
+        adapter.values.removeAt(position)
+        val values = ContentValues()
+        values.put(MyContentProvider.FAVORITE, 0)
+        DatabaseFunctionalities.update(values, data.dbID)
+        Snackbar.make(recyler, "", Snackbar.LENGTH_LONG)
+            .setText(data.firstName+" "+data.lastName+" "+resources.getString(R.string.remove_from_favorite))
+            .setTextColor(Color.WHITE).setMaxInlineActionWidth(12).show()
+        adapter.notifyItemRemoved(position)
+    }
     private fun getFavoriteSwipeGestures():ItemTouchHelper.Callback{
         return object : ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val adapter = recyler.adapter as ContactAndFavoriteAdapter
-                val data = adapter.values[viewHolder.adapterPosition]
-                when (direction) {
-                    ItemTouchHelper.RIGHT->{
-                        val position=viewHolder.adapterPosition
-                        data.favorite = false
-                        adapter.values.removeAt(position)
-                        val values = ContentValues()
-                        values.put(MyContentProvider.FAVORITE, 0)
-                        DatabaseFunctionalities().update(values,data,contentResolver)
-                        Snackbar.make(recyler, "", Snackbar.LENGTH_LONG)
-                            .setText("${data.firstName} ${data.lastName} ${resources.getString(R.string.remove_from_favorite)}")
-                            .setTextColor(Color.WHITE).setMaxInlineActionWidth(12).show()
-                        adapter.notifyItemRemoved(position)
-                    }
+                if (direction==ItemTouchHelper.RIGHT) {
+                    removeContactFromFavoriteGesture(viewHolder)
                 }
             }
             override fun onMove(
@@ -204,59 +212,57 @@ class ContactsDisplayFragment : Fragment(){
             }
         }
     }
-
+    private fun addContactToFavoriteGesture(viewHolder: RecyclerView.ViewHolder){
+        val adapter=(recyler.adapter as ContactAndFavoriteAdapter)
+        val data = adapter.values[viewHolder.adapterPosition]
+        data.favorite = true
+        if(!parent.favoriteList.contains(data)) {
+            parent.favoriteList.add(data)
+            parent.favoriteList.sortBy { it.firstName.uppercase() }
+        }
+        val values = ContentValues()
+        values.put(MyContentProvider.FAVORITE, 1)
+        DatabaseFunctionalities.update(values,data.dbID)
+        Toast.makeText(context, data.firstName+" "+data.lastName+" "+resources.getString(R.string.add_to_favorite), Toast.LENGTH_SHORT).show()
+        adapter.notifyItemChanged(viewHolder.adapterPosition)
+    }
+    private fun deleteContactGesture(viewHolder: RecyclerView.ViewHolder){
+        val adapter=(recyler.adapter as ContactAndFavoriteAdapter)
+        val data = adapter.values[viewHolder.adapterPosition]
+        val position = viewHolder.adapterPosition
+        adapter.values.removeAt(position)
+        parent.contactList.removeIf { it.dbID==data.dbID }
+        parent.favoriteList.removeIf { it.dbID==data.dbID }
+        DatabaseFunctionalities.delete(data.dbID.toString())
+        adapter.notifyItemRemoved(position)
+        val snackBar=Snackbar.make(recyler, data.firstName+" "+data.lastName+" "+resources.getString(R.string.deleted), Snackbar.LENGTH_SHORT)
+            .setTextColor(Color.WHITE)
+            .setAction(resources.getString(R.string.undo)) {
+                undoDeletedContact(position,data)
+            }
+        val snackBarLayout = snackBar.view as SnackbarLayout
+        snackBarLayout.setPadding(100, 0, 150, 0)
+        snackBar.show()
+    }
+    private fun undoDeletedContact(position:Int,data: ContactDataClass){
+        val adapter=(recyler.adapter as ContactAndFavoriteAdapter)
+        adapter.values.add(position, data)
+        adapter.notifyItemInserted(position)
+        parent.favoriteList.add(data)
+        parent.favoriteList.sortBy { it.firstName.uppercase() }
+        val values=ContactDataClass.getContentValuesForContact(data)
+        DatabaseFunctionalities.insert(values)
+    }
     private fun getContactSwipeGestures():ItemTouchHelper.Callback{
         return object : ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT){
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val adapter=(recyler.adapter as ContactAndFavoriteAdapter)
-                val data = adapter.values.get(viewHolder.adapterPosition)
                 when (direction) {
                     ItemTouchHelper.LEFT -> {
-                        data.favorite = true
-                        if(!MainActivity.favoriteContactList.contains(data)) {
-                            MainActivity.favoriteContactList.add(data)
-                        }
-                        val values = ContentValues()
-                        values.put(MyContentProvider.FAVORITE, 1)
-                        DatabaseFunctionalities().update(values,data,contentResolver)
-                        Toast.makeText(context, "${data.firstName} ${data.lastName} ${resources.getString(R.string.add_to_favorite)}", Toast.LENGTH_SHORT).show()
-                        adapter.notifyItemChanged(viewHolder.adapterPosition)
+                        addContactToFavoriteGesture(viewHolder)
                     }
                     ItemTouchHelper.RIGHT -> {
-                        val position = viewHolder.adapterPosition
-                        adapter.values.removeAt(position)
-                        DatabaseFunctionalities().delete(data.dbID.toString(),contentResolver)
-                        adapter.notifyItemRemoved(position)
-                        val snackBar=Snackbar.make(recyler, "${data.firstName} ${data.lastName} ${resources.getString(R.string.deleted)}", Snackbar.LENGTH_SHORT)
-                            .setTextColor(Color.WHITE)
-                            .setAction(resources.getString(R.string.undo)) {
-                                adapter.values.add(position, data)
-                                val values=ContentValues()
-                                values.put(MyContentProvider.ID,data.dbID)
-                                values.put(MyContentProvider.FIRST_NAME,data.firstName)
-                                values.put(MyContentProvider.LAST_NAME,data.lastName)
-                                try {
-                                    values.put(MyContentProvider.NUMBER1, data.number[0])
-                                    values.put(MyContentProvider.NUMBER2, data.number[1])
-                                }catch (exception:IndexOutOfBoundsException){
-                                    if(data.number.size>0){
-                                        values.put(MyContentProvider.NUMBER1, data.number[0])
-                                        values.put(MyContentProvider.NUMBER2, EMPTY_STRING)
-                                    }else{
-                                        values.put(MyContentProvider.NUMBER2, EMPTY_STRING)
-                                        values.put(MyContentProvider.NUMBER1, EMPTY_STRING)
-                                    }
-                                }
-                                values.put(MyContentProvider.EMAIL,data.email)
-                                values.put(MyContentProvider.FAVORITE,data.favorite)
-                                values.put(MyContentProvider.PROFILE_IMAGE, "${data.firstName}${data.lastName}${resources.getString(R.string.image_format)}")
-                                DatabaseFunctionalities().insert(values,contentResolver)
-                                adapter.notifyItemInserted(position)
-                            }
-                        val snackBarLayout = snackBar.view as SnackbarLayout
-                        snackBarLayout.setPadding(100, 0, 150, 0)
-                        snackBar.show()
+                        deleteContactGesture(viewHolder)
                     }
                 }
             }

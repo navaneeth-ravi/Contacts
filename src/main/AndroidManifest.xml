@@ -15,7 +15,7 @@
             android:name=".MyContentProvider"
             android:authorities="com.enoda.contact.provider"
             android:enabled="true"
-            android:exported="true"></provider>
+            android:exported="false"/>
 
         <activity
             android:name=".CreateAndEditContactActivity"

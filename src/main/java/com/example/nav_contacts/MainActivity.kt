@@ -4,6 +4,7 @@ package com.example.nav_contacts
 import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.database.Cursor
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,8 +13,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,27 +28,28 @@ class MainActivity : AppCompatActivity() {
     private var menu:Menu?=null
     private var searchText:String=""
     lateinit var displayContactsFragment: ContactsDisplayFragment
+    var contactList=ArrayList<ContactDataClass>()
+    var favoriteList=ArrayList<ContactDataClass>()
+
     companion object {
         private const val GRID_VIEW = "grid"
         private const val SEARCH_TEXT = "search"
         private const val CONTACT_BUTTON_TEXT_COLOR_KEY = "contactColor"
         private const val FAVORITES_CONTACT_BUTTON_TEXT_COLOR_KEY = "favoriteColor"
-        lateinit var contactList: ArrayList<ContactDataClass>
-        lateinit var favoriteContactList: ArrayList<ContactDataClass>
-
-        fun makeFavoriteContactList() {
-            favoriteContactList = ArrayList()
-            for (i in contactList) {
-                if (i.favorite) {
-                    favoriteContactList.add(i)
-                }
+    }
+    private fun getFavoriteContactList() {
+        favoriteList = ArrayList()
+        for (i in contactList) {
+            if (i.favorite) {
+                favoriteList.add(i)
             }
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ContactMain.resources=resources
+        ContactMain.contentResolver=contentResolver
         setContentView(R.layout.activity_main)
-
         if (savedInstanceState!=null) {
             gridForRecycler=savedInstanceState.getBoolean(GRID_VIEW)
             searchText=savedInstanceState.getString(SEARCH_TEXT,"")
@@ -52,18 +59,76 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState==null) {
             displayContactsFragment=ContactsDisplayFragment()
-            displayContactsFragment.setContentResolver(contentResolver)
             supportFragmentManager.beginTransaction()
                 .add(R.id.container_for_display_contact_fragments,displayContactsFragment).commit()
         }
         onClickContactsAndFavoriteButtons()
-        DatabaseFunctionalities().getAllContactDataFromDatabase(contentResolver,this)
+        loadData()
+    }
+    private fun loadData(){
+        GlobalScope.launch(Dispatchers.IO) {
+            val cursor=DatabaseFunctionalities.getAllContactDataFromDatabase()
+            withContext(Dispatchers.Main){
+                getAllContacts(cursor)
+                refresh()
+            }
+        }
+    }
+
+    val details=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        if(it.resultCode == RESULT_OK) {
+            val intent = it.data
+            val dbId = intent?.getIntExtra(ContactDetailsActivity.CONTACT_KEY, -1)
+            val adapterPosition = intent?.getIntExtra(ContactDetailsActivity.POSITION_IN_ADAPTER,-1)
+            GlobalScope.launch(Dispatchers.IO) {
+                if (dbId != -1 && adapterPosition != -1 && adapterPosition!=null) {
+                    val cursor = DatabaseFunctionalities.getContact(dbId.toString())
+                    withContext(Dispatchers.Main) {
+                        updateAdapterData(cursor,adapterPosition,dbId)
+
+                    }
+                }
+
+            }
+        }
+        if(it.resultCode == RESULT_CANCELED) {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun updateAdapterData(cursor: Cursor?,adapterPosition:Int,dbId:Int?){
+        cursor?.moveToFirst()
+        val data=ContactDataClass.getContact(cursor)
+        val adapter =
+            displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter
+        if(data!=null){
+            if(gridForRecycler) {           // update in Favorites
+                if (!data.favorite ) {
+                    adapter.values.removeAt( adapterPosition )
+                    adapter.notifyItemRemoved( adapterPosition )
+                }else{
+                    adapter.values[adapterPosition]=data
+                    adapter.notifyItemChanged(adapterPosition)
+                }
+            }else{                         // update in Contacts
+                if( data.favorite && !favoriteList.any { it.dbID == data.dbID } ){
+                    favoriteList.add( data )
+                    favoriteList.sortBy { it.firstName.uppercase() }
+                }
+                adapter.values[adapterPosition]=data
+                adapter.notifyItemChanged(adapterPosition)
+            }
+        } else{                           // update if contact is deleted
+            adapter.values.removeAt(adapterPosition)
+            contactList.removeIf { it.dbID==dbId }
+            favoriteList.removeIf { it.dbID==dbId }
+            adapter.notifyItemRemoved(adapterPosition)
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        if (menu!=null) {
-            val emptySearchText=""
-            val search=menu.findItem(R.id.search)
+        if (menu !=null) {
+            val emptySearchText = ""
+            val search = menu.findItem(R.id.search)
             if (searchText!=emptySearchText){
                 search.expandActionView()
                 (search.actionView as SearchView).setQuery(searchText,false)
@@ -78,13 +143,13 @@ class MainActivity : AppCompatActivity() {
     private fun expandSearchListener(searchItem:MenuItem,menu: Menu){
         searchItem.setOnActionExpandListener(object : OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                menu.findItem(R.id.sort).setVisible(false)
+                menu.findItem(R.id.sort).isVisible = false
                 findViewById<LinearLayout>(R.id.footer).visibility=View.GONE
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                menu.findItem(R.id.sort).setVisible(true)
+                menu.findItem(R.id.sort).isVisible = true
                 findViewById<LinearLayout>(R.id.footer).visibility=View.VISIBLE
                 return true
             }
@@ -96,16 +161,21 @@ class MainActivity : AppCompatActivity() {
             override fun onQueryTextChange(search: String?): Boolean {
                 searchAdapterValues.clear()
                 val adapter:ContactAndFavoriteAdapter=(displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter)
+                Toast.makeText(this@MainActivity, "${adapter.values.size} ada", Toast.LENGTH_SHORT).show()
                 if (search!=null) {
                     if (!gridForRecycler) {
-                        contactList.forEach() {
-                            if ("${it.firstName} ${it.lastName}".contains(search, true)) {
+                        contactList.forEach {
+                            if ((it.firstName+" "+it.lastName).contains(search, true) ||
+                                (it.firstName+" "+it.lastName).contains(search, true))
+                                {
                                 searchAdapterValues.add(it)
                             }
                         }
                     } else {
-                        favoriteContactList.forEach() {
-                            if ("${it.firstName} ${it.lastName}".contains(search, true)) {
+                        favoriteList.forEach {
+                            if ((it.firstName+" "+it.lastName).contains(search, true) ||
+                                (it.firstName+" "+it.lastName).contains(search, true))
+                                {
                                 searchAdapterValues.add(it)
                             }
                         }
@@ -144,10 +214,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.dummy -> {
                 addDummyContacts()
-                item.setVisible(false)
-                val adapter=displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter
-                adapter.setAdapterContactData(contactList)
-                adapter.notifyDataSetChanged()
+                item.isVisible = false
             }
         }
         return super.onOptionsItemSelected(item)
@@ -168,8 +235,10 @@ class MainActivity : AppCompatActivity() {
         super.onRestoreInstanceState(savedInstanceState)
         findViewById<Button>(R.id.fav).setTextColor(savedInstanceState.getInt(
             FAVORITES_CONTACT_BUTTON_TEXT_COLOR_KEY))
+
         findViewById<Button>(R.id.contacts).setTextColor(savedInstanceState.getInt(
             CONTACT_BUTTON_TEXT_COLOR_KEY))
+
         searchText=savedInstanceState.getString(SEARCH_TEXT,"")
     }
     override fun onSaveInstanceState(outState: Bundle) {
@@ -189,7 +258,6 @@ class MainActivity : AppCompatActivity() {
         val contacts:Button=findViewById(R.id.contacts)
         favorites.setOnClickListener {
             displayContactsFragment=ContactsDisplayFragment()
-            displayContactsFragment.setContentResolver(contentResolver)
             gridForRecycler=true
             favorites.setTextColor(getColor(R.color.blue))
             contacts.setTextColor(getColor(R.color.black))
@@ -198,7 +266,6 @@ class MainActivity : AppCompatActivity() {
         }
         contacts.setOnClickListener {
             displayContactsFragment=ContactsDisplayFragment()
-            displayContactsFragment.setContentResolver(contentResolver)
             gridForRecycler=false
             favorites.setTextColor(getColor(R.color.black))
             contacts.setTextColor(getColor(R.color.blue))
@@ -207,12 +274,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    fun getAllContacts(cursor: Cursor?){
+        contactList= ArrayList()
+        if (cursor!!.moveToNext()) {
+            while (!cursor.isAfterLast) {
+                val contactDataClass=ContactDataClass.getContact(cursor)
+                if(contactDataClass!=null){
+                    contactList.add(contactDataClass)
+                }
+                cursor.moveToNext()
+            }
+            cursor.close()
+        }
+    }
+
+    private fun refresh(){
+        contactList.sortBy { it.firstName.uppercase() }
+        getFavoriteContactList()
         refreshRecycler()
     }
-    fun refreshRecycler(){
-        (displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter).notifyDataSetChanged()
+
+    private fun refreshRecycler(){
+        val adapter=(displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter)
+        if (gridForRecycler) {
+            adapter.assignAdapterData(favoriteList)
+        } else{
+            adapter.assignAdapterData(contactList)
+        }
+        adapter.notifyDataSetChanged()
     }
     private fun addDummyContacts(){
         val firstName = arrayOf(
@@ -256,9 +345,10 @@ class MainActivity : AppCompatActivity() {
             values.put(MyContentProvider.NUMBER2, resources.getString(R.string.empty))
             values.put(MyContentProvider.EMAIL, "")
             values.put(MyContentProvider.FAVORITE, 1)
-            values.put(MyContentProvider.PROFILE_IMAGE, "${firstName[i]}${lastName[i]}${resources.getString(R.string.image_format)}")
-            contentResolver.insert(MyContentProvider.CONTENT_URI, values)
-            DatabaseFunctionalities().getAllContactDataFromDatabase(contentResolver,this)
+            values.put(MyContentProvider.PROFILE_IMAGE, firstName[i]+lastName[i]+resources.getString(R.string.image_format))
+            DatabaseFunctionalities.insert(values)
         }
+        loadData()
     }
+
 }

@@ -2,7 +2,6 @@ package com.example.nav_contacts
 
 import android.content.*
 import android.database.Cursor
-import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
@@ -22,11 +21,9 @@ class MyContentProvider : ContentProvider() {
         const val FAVORITE="favorite"
         const val PROFILE_IMAGE="image"
 
-        const val PROVIDER_NAME="com.enoda.contact.provider"
-        const val URL="content://$PROVIDER_NAME/users"
-
-        // parsing the content URI
-        val CONTENT_URI = Uri.parse(URL)
+        private const val PROVIDER_NAME="com.enoda.contact.provider"
+        private const val URL="content://$PROVIDER_NAME/users"
+        val CONTENT_URI: Uri = Uri.parse(URL)
         const val uriCode = 1
         var uriMatcher: UriMatcher? = null
         private val values: HashMap<String, String>? = null
@@ -43,29 +40,16 @@ class MyContentProvider : ContentProvider() {
                 PROFILE_IMAGE + " TEXT" +")")
 
         init {
-            // to match the content URI
-            // every time user access table under content provider
             uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
-
-            // to access whole table
             uriMatcher!!.addURI(
                 PROVIDER_NAME,
                 "users",
                 uriCode
             )
-
-            // to access a particular row
-            // of the table
-            uriMatcher!!.addURI(
-                PROVIDER_NAME,
-                "users/*",
-                uriCode
-            )
         }
     }
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
-        var count=0
-        count=when(uriMatcher!!.match(uri)){
+        val count: Int = when(uriMatcher!!.match(uri)){
             uriCode->db!!.delete(TABLE_NAME,selection,selectionArgs)
             else -> throw IllegalArgumentException("Unknown URI $uri")
         }
@@ -76,15 +60,14 @@ class MyContentProvider : ContentProvider() {
         uri: Uri, values: ContentValues?, selection: String?,
         selectionArgs: Array<String>?
     ): Int {
-        var count=0
-        count=when(uriMatcher!!.match(uri)){
+        val count: Int = when(uriMatcher!!.match(uri)){
             uriCode->db!!.update(TABLE_NAME,values,selection,selectionArgs)
             else -> throw IllegalArgumentException("Unknown URI $uri")
         }
         context!!.contentResolver.notifyChange(uri,null)
         return count
     }
-    override fun getType(uri: Uri): String? {
+    override fun getType(uri: Uri): String {
         return when (uriMatcher!!.match(uri)) {
             uriCode -> "vnd.android.cursor.dir/users"
             else -> throw IllegalArgumentException("Unsupported URI: $uri")
@@ -110,17 +93,17 @@ class MyContentProvider : ContentProvider() {
 
     override fun query(
         uri: Uri, projection: Array<String>?, selection: String?,
-        selectionArgs: Array<String>?, sortingOrder: String?
+        selectionArgs: Array<String>?, sortOrder: String?
     ): Cursor? {
-        var sortOrder=sortingOrder
-        val queryBuilder=SQLiteQueryBuilder()
-        queryBuilder.tables= TABLE_NAME
-        when(uriMatcher!!.match(uri)){
-            uriCode-> queryBuilder.projectionMap= values
-            else->throw IllegalArgumentException("Unknown URI $uri")
-        }
-        if ( sortOrder == null || sortOrder === ""){
-            sortOrder= ID
+        val queryBuilder = SQLiteQueryBuilder()
+        queryBuilder.tables = TABLE_NAME
+        when ( uriMatcher!!.match(uri) ) {
+            uriCode-> {
+                queryBuilder.projectionMap = values
+            }
+            else->{
+                throw IllegalArgumentException( "Unknown URI $uri" )
+            }
         }
         val cursor=queryBuilder.query(db,projection,selection,selectionArgs,null,null,sortOrder)
         cursor.setNotificationUri(context!!.contentResolver,uri)

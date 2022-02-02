@@ -2,9 +2,9 @@ package com.example.nav_contacts
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
@@ -21,6 +21,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.net.toUri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -31,6 +35,7 @@ import java.util.regex.Pattern
 
 class CreateAndEditContactActivity : AppCompatActivity() {
     private var imageUri : Uri?=null
+    private lateinit var contact:ContactDataClass
     companion object{
         const val EDIT=0
         const val CREATE=1
@@ -41,18 +46,14 @@ class CreateAndEditContactActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_and_edit_contact)
-        val option=intent.getIntExtra(OPTION,1)
         if(savedInstanceState!=null){
             imageUri=savedInstanceState.getString(IMAGE_KEY)?.toUri()
             setUserProfileImage()
         }
-        if(option== EDIT) {
-            fillExistingValuesToEdit()
+        if(intent.getIntExtra(OPTION,1)== EDIT) {
+            getContactData()
         }
-        onClickSave(option)
-        onClickCloseButton()
-        onClickAddImageIcon()
-
+        onClickListeners()
         val number1EditField=findViewById<EditText>(R.id.number1)
         val number2EditField=findViewById<EditText>(R.id.number2)
         val emailEditField=findViewById<EditText>(R.id.email)
@@ -94,7 +95,7 @@ class CreateAndEditContactActivity : AppCompatActivity() {
         }
         try {
             if (imageUri != null) {
-                val imgFile = File(imageDirectory, "${contact.firstName + contact.lastName}${resources.getString(R.string.image_format)}")
+                val imgFile = File(imageDirectory, contact.firstName + contact.lastName + resources.getString(R.string.image_format))
                 val stream = FileOutputStream(imgFile)
                 bitmap?.compress(Bitmap.CompressFormat.PNG, 10, stream)
                 stream.flush()
@@ -110,9 +111,23 @@ class CreateAndEditContactActivity : AppCompatActivity() {
             outState.putString(IMAGE_KEY,imageUri.toString())
         }
     }
+    private fun getContactData(){
+        val dbID=intent.getIntExtra(EDIT_CONTACT_KEY,-1)
+        GlobalScope.launch(Dispatchers.IO) {
+            if(dbID!=-1) {
+                val cursor:Cursor?=DatabaseFunctionalities.getContact(dbID.toString())
+                withContext(Dispatchers.Main){
+                    cursor?.moveToFirst()
+                    val data=ContactDataClass.getContact(cursor)
+                    if(data!=null) {
+                        contact=data
+                        fillExistingValuesToEdit()
+                    }
+                }
+            }
+        }
+    }
     private fun fillExistingValuesToEdit(){
-        val contact=intent.getSerializableExtra(EDIT_CONTACT_KEY) as ContactDataClass
-
         val profile:ImageView=findViewById(R.id.user_ic)
         val firstName=findViewById<EditText>(R.id.first_name)
         val lastName=findViewById<EditText>(R.id.last_name)
@@ -136,7 +151,7 @@ class CreateAndEditContactActivity : AppCompatActivity() {
             val directory = applicationContext.filesDir
             val imageDirectory = File(directory, resources.getString(R.string.image_directory_name))
             val imgFile =
-                File(imageDirectory, "${firstName.text.toString() + lastName.text.toString()}${resources.getString(R.string.image_format)}")
+                File(imageDirectory, firstName.text.toString() + lastName.text.toString()+resources.getString(R.string.image_format))
             if (imgFile.exists()) {
                 profile.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
                 findViewById<CardView>(R.id.custom_profile).visibility = View.VISIBLE
@@ -171,7 +186,7 @@ class CreateAndEditContactActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (emailValidate){
-                    if (p0.toString().isNotEmpty() &&!validEmail(p0.toString())) {
+                    if (p0.toString().isNotEmpty() &&!validateEmail(p0.toString())) {
                         editTextMobileNumber.error = resources.getString(R.string.invalid_email)
                     }
                 } else {
@@ -189,7 +204,7 @@ class CreateAndEditContactActivity : AppCompatActivity() {
         val matcher:Matcher=pattern.matcher(phone)
         return matcher.matches()
     }
-    private fun validEmail(email: String):Boolean{
+    private fun validateEmail(email: String):Boolean{
         val pattern:Pattern= Pattern.compile("^\\S+@\\S+\\.\\S+\$")
         val matcher:Matcher=pattern.matcher(email)
         return matcher.matches()
@@ -214,7 +229,7 @@ class CreateAndEditContactActivity : AppCompatActivity() {
         }
         val email:String=findViewById<EditText>(R.id.email).text.toString().trim()
         if (email.isNotEmpty()) {
-            if (!validEmail(email)) {
+            if (!validateEmail(email)) {
                 Toast.makeText(this,  resources.getString(R.string.invalid_email), Toast.LENGTH_SHORT).show()
                 return null
             }
@@ -243,19 +258,10 @@ class CreateAndEditContactActivity : AppCompatActivity() {
                     detailContact.firstName = detailContact.lastName
                     detailContact.lastName = ""
                 }
-                val values= ContentValues()
-
-                MainActivity.contactList.add(detailContact)
-                setResult(RESULT_OK)
-                values.put(MyContentProvider.FIRST_NAME,detailContact.firstName)
-                values.put(MyContentProvider.LAST_NAME,detailContact.lastName)
-                values.put(MyContentProvider.NUMBER1,detailContact.number[0])
-                values.put(MyContentProvider.NUMBER2,detailContact.number[1])
-                values.put(MyContentProvider.EMAIL,detailContact.email)
-                values.put(MyContentProvider.FAVORITE,detailContact.favorite)
-                values.put(MyContentProvider.PROFILE_IMAGE, "${detailContact.firstName}${detailContact.lastName}${resources.getString(R.string.image_format)}")
-                DatabaseFunctionalities().insert(values,contentResolver)
+                val values=ContactDataClass.getContentValuesForContact(detailContact)
+                DatabaseFunctionalities.insert(values)
                 saveProfilePicture(convertUriToBitmap(), detailContact)
+                setResult(RESULT_OK)
                 finish()
             } else {
                 Toast.makeText(this, resources.getString(R.string.invalid), Toast.LENGTH_SHORT).show()
@@ -272,29 +278,12 @@ class CreateAndEditContactActivity : AppCompatActivity() {
                         detailContact.firstName = detailContact.lastName
                         detailContact.lastName = ""
                     }
-                    val contact = intent.getSerializableExtra(EDIT_CONTACT_KEY) as ContactDataClass
                     detailContact.dbID = contact.dbID
                     detailContact.favorite = contact.favorite
-                    val values = ContentValues()
-                    values.put(MyContentProvider.FIRST_NAME, detailContact.firstName)
-                    values.put(MyContentProvider.LAST_NAME, detailContact.lastName)
-                    values.put(MyContentProvider.NUMBER1, detailContact.number[0])
-                    values.put(MyContentProvider.NUMBER2, detailContact.number[1])
-                    values.put(MyContentProvider.EMAIL, detailContact.email)
-                    values.put(MyContentProvider.FAVORITE, detailContact.favorite)
-                    values.put(
-                        MyContentProvider.PROFILE_IMAGE,
-                        "${detailContact.firstName}${detailContact.lastName}${resources.getString(R.string.image_format)}"
-                    )
-                    DatabaseFunctionalities().update(values, detailContact,contentResolver)
+                    val values=ContactDataClass.getContentValuesForContact(detailContact)
+                    DatabaseFunctionalities.update(values, detailContact.dbID)
                     saveProfilePicture(convertUriToBitmap(), detailContact)
-                    if(MainActivity.contactList.remove(contact)) {
-                        MainActivity.contactList.add(detailContact)
-                    }
-                    MainActivity.contactList.sortBy { it.firstName }
-                    val intent = Intent()
-                    intent.putExtra(EDIT_CONTACT_KEY, detailContact)
-                    setResult(RESULT_OK, intent)
+                    setResult(RESULT_OK,intent)
                     finish()
                 } else {
                     Toast.makeText(this, resources.getString(R.string.invalid), Toast.LENGTH_SHORT).show()
@@ -306,7 +295,8 @@ class CreateAndEditContactActivity : AppCompatActivity() {
         }
     }
 
-    private fun onClickSave(option:Int){
+    private fun onClickSave(){
+        val option=intent.getIntExtra(OPTION,1)
         findViewById<Button>( R.id.save ).setOnClickListener {
             if (option == CREATE) {
                 addNewContact()
@@ -316,36 +306,45 @@ class CreateAndEditContactActivity : AppCompatActivity() {
             }
         }
     }
-
+    private fun onClickListeners(){
+        onClickAddImageIcon()
+        onClickCloseButton()
+        onClickSave()
+    }
     private fun onClickCloseButton(){
         findViewById<ImageView>(R.id.close).setOnClickListener {
+            //close activity
             finish()
+        }
+    }
+    private fun getProfilePicture(){
+        if (!PermissionUtils.hasPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+            if (PermissionUtils.shouldShowRational(this,Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                AlertDialog.Builder(this).setTitle(resources.getString(R.string.call_permission)).setMessage(resources.getString(R.string.allow_permission))
+                    .setPositiveButton(resources.getString(R.string.ok)) { _, _ ->
+                        // open settings
+                        val intent=Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        val uri= Uri.fromParts(resources.getString(R.string.uri_package),packageName,null)
+                        intent.data=uri
+                        startActivity(intent)
+                    }.setNegativeButton(resources.getString(R.string.cancel)){ dialogInterface, _ ->
+                        dialogInterface.dismiss()
+                    }.create().show()
+            } else {
+                PermissionUtils.requestPermissions(
+                    this,
+                    permissions,
+                    PermissionUtils.GALLERY_PERMISSION_CODE
+                )
+            }
+        } else {
+            chooseImageFromGallery()
         }
     }
     private fun onClickAddImageIcon(){
         findViewById<Button>(R.id.add_photo).setOnClickListener {
-            if (!PermissionUtils.hasPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-                if (PermissionUtils.shouldShowRational(this,Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    AlertDialog.Builder(this).setTitle(resources.getString(R.string.call_permission)).setMessage(resources.getString(R.string.allow_permission))
-                        .setPositiveButton(resources.getString(R.string.ok)) { _, _ ->
-                            val intent=Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            val uri= Uri.fromParts(resources.getString(R.string.uri_package),packageName,null)
-                            intent.data=uri
-                            startActivity(intent)
-                        }.setNegativeButton(resources.getString(R.string.cancel)){ dialogInterface, _ ->
-                            dialogInterface.dismiss()
-                        }.create().show()
-                } else {
-                    PermissionUtils.requestPermissions(
-                        this,
-                        permissions,
-                        PermissionUtils.GALLERY_PERMISSION_CODE
-                    )
-                }
-            } else {
-                chooseImageFromGallery()
-            }
+            getProfilePicture()
         }
     }
 
