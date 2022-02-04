@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 object PermissionUtils{
     const val CALL_PERMISSION_CODE=1
     const val GALLERY_PERMISSION_CODE=2
+    const val CONTACTS_PERMISSION_CODE=1
     fun requestPermissions(activity: Activity,permissions:Array<String>,permissionCode:Int){
         activity.requestPermissions(permissions,permissionCode)
     }

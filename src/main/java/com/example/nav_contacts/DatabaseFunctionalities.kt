@@ -1,6 +1,5 @@
 package com.example.nav_contacts
 
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.database.Cursor
 import kotlinx.coroutines.*
@@ -31,7 +30,6 @@ object DatabaseFunctionalities {
         }
         return job.await()
     }
-
     suspend fun getAllContactDataFromDatabase():Cursor?{
         val job=GlobalScope.async {
             ContactMain.contentResolver.query(MyContentProvider.CONTENT_URI, null, null, null, null)

@@ -1,7 +1,6 @@
 package com.example.nav_contacts
 
 import android.content.ContentValues
-import android.content.res.Resources
 import android.database.Cursor
 
 
@@ -47,11 +46,13 @@ data class ContactDataClass(var firstName: String,var lastName: String,var numbe
                     val lastName = cursor.getString(lastNameId)
                     val number = ArrayList<String>()
                     val number1 = cursor.getString(number1Id)
-                    if (!number1.equals("empty") && (number1 != null))
+                    if (!number1.equals(ContactMain.resources.getString(R.string.empty)) && (number1 != null)) {
                         number.add(number1)
+                    }
                     val number2 = cursor.getString(number2Id)
-                    if (!number2.equals("empty") && (number2 != null))
+                    if (!number2.equals(ContactMain.resources.getString(R.string.empty)) && (number2 != null)) {
                         number.add(number2)
+                    }
                     val favorites = cursor.getString(favoriteId).toInt() == 1
                     val email = cursor.getString(emailColumnId)
                     val profileImageFileName = cursor.getString(profileImageId)

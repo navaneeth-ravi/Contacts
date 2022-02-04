@@ -18,7 +18,4 @@
                 app:showAsAction="never"/>
         </menu>
     </item>
-    <item android:id="@+id/dummy"
-        app:showAsAction="never"
-        android:title="add dummy contacts" />
 </menu>

@@ -1,7 +1,8 @@
 package com.example.nav_contacts
 
 
-import android.content.ContentValues
+import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.database.Cursor
@@ -14,6 +15,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +52,11 @@ class MainActivity : AppCompatActivity() {
         ContactMain.resources=resources
         ContactMain.contentResolver=contentResolver
         setContentView(R.layout.activity_main)
+        if(!isContactPermission()){
+            buildAlertMessageToContinueOrCloseApplication()
+        }else{
+            doAppInstallationAction()
+        }
         if (savedInstanceState!=null) {
             gridForRecycler=savedInstanceState.getBoolean(GRID_VIEW)
             searchText=savedInstanceState.getString(SEARCH_TEXT,"")
@@ -63,7 +70,21 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.container_for_display_contact_fragments,displayContactsFragment).commit()
         }
         onClickContactsAndFavoriteButtons()
-        loadData()
+
+    }
+
+    private fun doAppInstallationAction(){
+        val sharedPreferences:SharedPreferences = getSharedPreferences("PREF_NAME",0)
+        val firstTime: Boolean=sharedPreferences.getBoolean("FIRST",true)
+        if(firstTime){
+            Toast.makeText(this, resources.getString(R.string.loading), Toast.LENGTH_SHORT).show()
+            getSystemContact()
+            val edit=sharedPreferences.edit()
+            edit.putBoolean("FIRST",false)
+            edit.apply()
+        }else {
+            loadData()
+        }
     }
     private fun loadData(){
         GlobalScope.launch(Dispatchers.IO) {
@@ -73,6 +94,18 @@ class MainActivity : AppCompatActivity() {
                 refresh()
             }
         }
+    }
+    private fun isContactPermission():Boolean{
+        return PermissionUtils.hasPermission(this,Manifest.permission.READ_CONTACTS)
+    }
+    private fun buildAlertMessageToContinueOrCloseApplication(){
+        AlertDialog.Builder(this).setTitle(resources.getString(R.string.allow_app))
+            .setPositiveButton(resources.getString(R.string.ok)){ _, _ ->
+                PermissionUtils.requestPermissions(this, arrayOf(Manifest.permission.READ_CONTACTS), PermissionUtils.CONTACTS_PERMISSION_CODE)
+        }.setNegativeButton(resources.getString(R.string.cancel)){dialogInterface,_ ->
+                dialogInterface.dismiss()
+                finish()
+        }.setCancelable(false).show()
     }
 
     val details=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
@@ -85,14 +118,13 @@ class MainActivity : AppCompatActivity() {
                     val cursor = DatabaseFunctionalities.getContact(dbId.toString())
                     withContext(Dispatchers.Main) {
                         updateAdapterData(cursor,adapterPosition,dbId)
-
                     }
                 }
 
             }
         }
         if(it.resultCode == RESULT_CANCELED) {
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, resources.getString(R.string.error), Toast.LENGTH_SHORT).show()
         }
     }
     private fun updateAdapterData(cursor: Cursor?,adapterPosition:Int,dbId:Int?){
@@ -161,7 +193,6 @@ class MainActivity : AppCompatActivity() {
             override fun onQueryTextChange(search: String?): Boolean {
                 searchAdapterValues.clear()
                 val adapter:ContactAndFavoriteAdapter=(displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter)
-                Toast.makeText(this@MainActivity, "${adapter.values.size} ada", Toast.LENGTH_SHORT).show()
                 if (search!=null) {
                     if (!gridForRecycler) {
                         contactList.forEach {
@@ -212,10 +243,6 @@ class MainActivity : AppCompatActivity() {
             R.id.last_name -> {
                 displayContactsFragment.sortByLastName()
             }
-            R.id.dummy -> {
-                addDummyContacts()
-                item.isVisible = false
-            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -228,6 +255,13 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode==PermissionUtils.CALL_PERMISSION_CODE && grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             Toast.makeText(this, resources.getString(R.string.permission_allowed), Toast.LENGTH_SHORT).show()
+        }
+        if (requestCode==PermissionUtils.CONTACTS_PERMISSION_CODE && grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+            Toast.makeText(this, resources.getString(R.string.permission_allowed), Toast.LENGTH_SHORT).show()
+            doAppInstallationAction()
+        }else{
+            Toast.makeText(this,resources.getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 
@@ -287,6 +321,14 @@ class MainActivity : AppCompatActivity() {
             cursor.close()
         }
     }
+    private fun getSystemContact() {
+        GlobalScope.launch(Dispatchers.IO) {
+            SystemContact.getAllContacts()
+            withContext(Dispatchers.Main){
+                loadData()
+            }
+        }
+    }
 
     private fun refresh(){
         contactList.sortBy { it.firstName.uppercase() }
@@ -303,52 +345,4 @@ class MainActivity : AppCompatActivity() {
         }
         adapter.notifyDataSetChanged()
     }
-    private fun addDummyContacts(){
-        val firstName = arrayOf(
-            "Police",
-            "Government",
-            "SIM",
-            "IRCTC",
-            "Fire",
-            "Women's ",
-            "Corona TN",
-            "Traffic",
-            "Navaneethan"
-        )
-        val lastName = arrayOf(
-            "",
-            "Ambulance",
-            "Complaint",
-            "HelpLine",
-            "Service",
-            "HelpLine",
-            "HelpLine",
-            "HelpLine",
-            ""
-        )
-        val numberdum = arrayOf(
-            "100",
-            "108",
-            "199",
-            "1800111139",
-            "101",
-            "1091",
-            "+91-11-23978046",
-            "1073",
-            "8838900839"
-        )
-        for (i in firstName.indices) {
-            val values = ContentValues()
-            values.put(MyContentProvider.FIRST_NAME, firstName[i])
-            values.put(MyContentProvider.LAST_NAME, lastName[i])
-            values.put(MyContentProvider.NUMBER1, numberdum[i])
-            values.put(MyContentProvider.NUMBER2, resources.getString(R.string.empty))
-            values.put(MyContentProvider.EMAIL, "")
-            values.put(MyContentProvider.FAVORITE, 1)
-            values.put(MyContentProvider.PROFILE_IMAGE, firstName[i]+lastName[i]+resources.getString(R.string.image_format))
-            DatabaseFunctionalities.insert(values)
-        }
-        loadData()
-    }
-
 }
