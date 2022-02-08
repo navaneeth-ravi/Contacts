@@ -1,0 +1,2 @@
+com/example/nav_contacts/BuildConfig.java
+ com.example.nav_contacts.BuildConfig

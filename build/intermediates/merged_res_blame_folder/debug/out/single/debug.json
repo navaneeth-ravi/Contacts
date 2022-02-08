@@ -1,0 +1,146 @@
+[
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_edit.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\edit.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable-v24_eiffel_tower.jpg.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable-v24\\eiffel_tower.jpg"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_fav_star.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\fav_star.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_contacts_24.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\contacts_24.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_star.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\star.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\menu_contact_app_menu.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\menu\\contact_app_menu.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout-land_activity_contact_details.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout-land\\activity_contact_details.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_search.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\search.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_snackbar_layoutt.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\snackbar_layoutt.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\menu_contact_details_menu.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\menu\\contact_details_menu.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout_activity_contact_details.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout\\activity_contact_details.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout_activity_create_and_edit_contact.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout\\activity_create_and_edit_contact.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_circle.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\circle.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_account_circle.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\account_circle.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout_contact_number_contact_details.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout\\contact_number_contact_details.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_close_symbol.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\close_symbol.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_favorite.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\favorite.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout_favorites_item.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout\\favorites_item.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout_loading_action.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout\\loading_action.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_add_a_photo.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\add_a_photo.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_baseline_message_24.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\ic_baseline_message_24.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout-land_activity_create_and_edit_contact.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout-land\\activity_create_and_edit_contact.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_snack_layout.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\snack_layout.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_image_shadow.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\image_shadow.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_star_border.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\star_border.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_baseline_call_24.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\ic_baseline_call_24.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_arrow_back.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\arrow_back.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_mail_icon.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\mail_icon.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_snackbar_layout.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\snackbar_layout.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout_contact_item.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout\\contact_item.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_delete_sweep.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\delete_sweep.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_add_contact.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\add_contact.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\drawable_edit_text_border.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\drawable\\edit_text_border.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout-land_activity_main.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout-land\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\build\\intermediates\\merged_res\\debug\\layout_fragment_display_contacts.xml.flat",
+        "source": "C:\\Users\\navaneeth-12320\\AndroidStudioProjects\\NavContacts\\app\\src\\main\\res\\layout\\fragment_display_contacts.xml"
+    }
+]

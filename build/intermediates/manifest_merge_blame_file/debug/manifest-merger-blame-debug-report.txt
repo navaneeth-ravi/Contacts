@@ -1,0 +1,108 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.nav_contacts"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="28"
+8-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml
+9        android:targetSdkVersion="31" />
+9-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml
+10
+11    <uses-permission android:name="android.permission.CALL_PHONE" />
+11-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:5:5-69
+11-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:5:22-66
+12    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+12-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:6:5-80
+12-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:6:22-77
+13    <uses-permission android:name="android.permission.READ_CONTACTS" />
+13-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:7:5-71
+13-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:7:22-69
+14
+15    <application
+15-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:9:5-38:19
+16        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+16-->[androidx.core:core:1.7.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\2211b2af80c2040823aefb9bbce90544\transformed\core-1.7.0\AndroidManifest.xml:24:18-86
+17        android:debuggable="true"
+18        android:extractNativeLibs="false"
+19        android:icon="@drawable/contacts_24"
+19-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:10:9-45
+20        android:label="@string/app_name"
+20-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:11:9-41
+21        android:supportsRtl="true"
+21-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:12:9-35
+22        android:testOnly="true"
+23        android:theme="@style/Theme.NavContacts" >
+23-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:13:9-49
+24        <provider
+24-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:14:9-18:39
+25            android:name="com.example.nav_contacts.MyContentProvider"
+25-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:15:13-46
+26            android:authorities="com.nav.contact.provider"
+26-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:16:13-59
+27            android:enabled="true"
+27-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:17:13-35
+28            android:exported="false" />
+28-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:18:13-37
+29
+30        <activity
+30-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:20:9-23:45
+31            android:name="com.example.nav_contacts.CreateAndEditContactActivity"
+31-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:21:13-57
+32            android:exported="false"
+32-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:22:13-37
+33            android:theme="@style/Theme1" />
+33-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:23:13-42
+34        <activity
+34-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:24:9-27:45
+35            android:name="com.example.nav_contacts.ContactDetailsActivity"
+35-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:25:13-51
+36            android:exported="false"
+36-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:26:13-37
+37            android:theme="@style/Theme1" />
+37-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:27:13-42
+38        <activity
+38-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:28:9-37:20
+39            android:name="com.example.nav_contacts.MainActivity"
+39-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:29:13-41
+40            android:exported="true"
+40-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:30:13-36
+41            android:theme="@style/Theme" >
+41-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:31:13-41
+42            <intent-filter>
+42-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:32:13-36:29
+43                <action android:name="android.intent.action.MAIN" />
+43-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:33:17-69
+43-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:33:25-66
+44
+45                <category android:name="android.intent.category.LAUNCHER" />
+45-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:35:17-77
+45-->C:\Users\navaneeth-12320\AndroidStudioProjects\NavContacts\app\src\main\AndroidManifest.xml:35:27-74
+46            </intent-filter>
+47        </activity>
+48
+49        <provider
+49-->[androidx.emoji2:emoji2:1.0.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\39db454ca943e4d6ae7bf175ff33fbf8\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:26:9-34:20
+50            android:name="androidx.startup.InitializationProvider"
+50-->[androidx.emoji2:emoji2:1.0.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\39db454ca943e4d6ae7bf175ff33fbf8\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:27:13-67
+51            android:authorities="com.example.nav_contacts.androidx-startup"
+51-->[androidx.emoji2:emoji2:1.0.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\39db454ca943e4d6ae7bf175ff33fbf8\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:28:13-68
+52            android:exported="false" >
+52-->[androidx.emoji2:emoji2:1.0.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\39db454ca943e4d6ae7bf175ff33fbf8\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:29:13-37
+53            <meta-data
+53-->[androidx.emoji2:emoji2:1.0.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\39db454ca943e4d6ae7bf175ff33fbf8\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:31:13-33:52
+54                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+54-->[androidx.emoji2:emoji2:1.0.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\39db454ca943e4d6ae7bf175ff33fbf8\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:32:17-75
+55                android:value="androidx.startup" />
+55-->[androidx.emoji2:emoji2:1.0.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\39db454ca943e4d6ae7bf175ff33fbf8\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:33:17-49
+56            <meta-data
+56-->[androidx.lifecycle:lifecycle-process:2.4.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\4dc7c0429757f6a5acea98e5401439bf\transformed\jetified-lifecycle-process-2.4.0\AndroidManifest.xml:31:13-33:52
+57                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+57-->[androidx.lifecycle:lifecycle-process:2.4.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\4dc7c0429757f6a5acea98e5401439bf\transformed\jetified-lifecycle-process-2.4.0\AndroidManifest.xml:32:17-78
+58                android:value="androidx.startup" />
+58-->[androidx.lifecycle:lifecycle-process:2.4.0] C:\Users\navaneeth-12320\.gradle\caches\transforms-3\4dc7c0429757f6a5acea98e5401439bf\transformed\jetified-lifecycle-process-2.4.0\AndroidManifest.xml:33:17-49
+59        </provider>
+60    </application>
+61
+62</manifest>
