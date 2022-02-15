@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/account_circle.xml" value="0.290625" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/add_a_photo.xml" value="0.18090277777777777" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/add_contact.xml" value="0.19375" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/circle.xml" value="0.11875" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/circle_24.xml" value="0.19375" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/contact_icon.xml" value="0.19375" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/contacts_24.xml" value="0.19375" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/edit.xml" value="0.1546875" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/edit_text_border.xml" value="0.290625" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/fav_star.xml" value="0.290625" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/favorite.xml" value="0.15625" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/ic_baseline_call_24.xml" value="0.290625" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/ic_baseline_message_24.xml" value="0.290625" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/ic_baseline_star_24.xml" value="0.290625" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/image_shadow.xml" value="0.19375" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/mail_icon.xml" value="0.19375" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/snack_layout.xml" value="0.10833333333333334" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/snackbar_layout.xml" value="0.15833333333333333" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/snackbar_layoutt.xml" value="0.15833333333333333" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/star.xml" value="0.15989583333333332" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/drawable/star_border.xml" value="0.290625" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout-land/activity_contact_creation.xml" value="0.23236331569664903" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout-land/activity_contact_details.xml" value="0.1" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout-land/activity_create_and_edit_contact.xml" value="0.16875" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout-land/activity_main.xml" value="0.21156373193166886" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/activity_contact_creation.xml" value="0.1" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/activity_contact_details.xml" value="0.1" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/activity_create_and_edit_contact.xml" value="0.1" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/activity_main.xml" value="0.176" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/contact_item.xml" value="0.16598360655737704" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/contact_item_contact_details.xml" value="0.1829861111111111" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/contact_number_contact_details.xml" value="0.16598360655737704" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/contact_view.xml" value="0.264" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/favorites_item.xml" value="0.4" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/fragment_display_contacts.xml" value="0.2" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/fragment_favorites.xml" value="0.264" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/loading_action.xml" value="0.16939890710382513" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/testing.xml" value="0.4" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/layout/testing2.xml" value="0.264" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/menu/contact_app_menu.xml" value="0.1" />
+        <entry key="..\:/Users/navaneeth-12320/AndroidStudioProjects/NavContacts/app/src/main/res/menu/contact_details_menu.xml" value="0.1829861111111111" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

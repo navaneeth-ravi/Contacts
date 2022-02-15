@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:id="@+id/activity_main_landscape"
+    android:orientation="vertical"
+    android:background="@color/white">
+    <FrameLayout
+        android:id="@+id/container_for_display_contact_fragments"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:layout_gravity="center">
+    </FrameLayout>
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.5"
+        android:background="@color/white">
+        <Button
+            android:id="@+id/fav"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/favorites"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/white"
+            style="?android:attr/borderlessButtonStyle"/>
+        <Button
+            android:id="@+id/contacts"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/contacts"
+            android:textColor="@color/blue"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/white"
+            style="?android:attr/borderlessButtonStyle"/>
+    </LinearLayout>
+
+</LinearLayout>
