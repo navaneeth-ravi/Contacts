@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Contacts-Nav</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="delete">Delete</string>
     <string name="deleted">Deleted</string>
     <string name="first_letter_in_contact_name">A</string>
