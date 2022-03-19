@@ -2,6 +2,7 @@ package com.example.nav_contacts
 
 
 import android.app.Activity
+import android.app.Application
 import android.content.pm.PackageManager
 
 object PermissionUtils{

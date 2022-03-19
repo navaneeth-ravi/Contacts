@@ -1,4 +1,4 @@
-package com.example.nav_contacts
+package com.example.nav_contacts.presentation.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,6 +10,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nav_contacts.ContactMain.Companion.resources
+import com.example.nav_contacts.R
+import com.example.nav_contacts.presentation.activity.ContactDetailsActivity
 
 class PhoneNumberAdapter(var number: ArrayList<String>?=null, var context: Context?=null): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class ViewHolderForPhoneNumberInContactDetails(itemView: View):RecyclerView.ViewHolder(itemView){

@@ -1,15 +1,17 @@
-package com.example.nav_contacts
+package com.example.nav_contacts.data.db.local_db
 
 import android.content.ContentValues
 import android.database.Cursor
-import android.net.Uri
+import com.example.nav_contacts.ContactMain
 import kotlinx.coroutines.*
 
 object DatabaseFunctionalities {
 
     fun update(values: ContentValues, dbID: Int?){
         GlobalScope.launch(Dispatchers.IO){
-            ContactMain.contentResolver.update(MyContentProvider.CONTENT_URI,values,MyContentProvider.ID+"=?", arrayOf(dbID.toString()))
+            ContactMain.contentResolver.update(
+                MyContentProvider.CONTENT_URI,values,
+                MyContentProvider.ID +"=?", arrayOf(dbID.toString()))
         }
     }
     fun delete(dbID: String){
@@ -22,13 +24,13 @@ object DatabaseFunctionalities {
     }
     fun insert(values: ContentValues){
         GlobalScope.launch(Dispatchers.IO){
-            val a=ContactMain.contentResolver.insert(MyContentProvider.CONTENT_URI, values)
+            val a= ContactMain.contentResolver.insert(MyContentProvider.CONTENT_URI, values)
 //            Uri.parse(MyContentProvider.CONTENT_URI+"/"+)
         }
     }
     suspend fun getContact(dbID: String):Cursor?{
         val job:Deferred<Cursor?> =GlobalScope.async(Dispatchers.IO) {
-            ContactMain.contentResolver.query(MyContentProvider.CONTENT_URI, null, MyContentProvider.ID+"=?", arrayOf(dbID), null)
+            ContactMain.contentResolver.query(MyContentProvider.CONTENT_URI, null, MyContentProvider.ID +"=?", arrayOf(dbID), null)
         }
         return job.await()
     }

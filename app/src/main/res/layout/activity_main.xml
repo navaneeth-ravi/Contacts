@@ -3,22 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".presentation.activity.MainActivity"
     android:id="@+id/activity_main_portrait"
     android:orientation="vertical"
     android:background="@color/white">
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/container_for_display_contact_fragments"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="9">
-        <FrameLayout
-            android:id="@+id/container_for_display_contact_fragments"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center">
-        </FrameLayout>
+        android:layout_weight="9"
+        android:layout_gravity="center"
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp">
+    </FrameLayout>
 
-    </RelativeLayout>
     <LinearLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ContactDetailsActivity"
+    tools:context=".presentation.activity.ContactDetailsActivity"
     android:orientation="vertical"
     android:background="@color/white">
     <com.google.android.material.appbar.AppBarLayout
@@ -24,13 +24,15 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/arrow_back"
                 android:layout_gravity="start"
-                android:paddingStart="10dp"/>
+                android:paddingStart="10dp"
+                android:paddingEnd="0dp"/>
             <ImageView
                 android:id="@+id/star"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/star_border"
                 android:layout_gravity="end"
+                android:paddingStart="0dp"
                 android:paddingEnd="20dp"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -87,47 +89,24 @@
         android:background="@color/lightGray"
         android:layout_below="@+id/contact_name"/>
     <LinearLayout
-        android:id="@+id/call_message"
+        android:id="@+id/call_message_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/line_break"
         android:orientation="horizontal"
         android:paddingTop="10dp"
-        android:layout_below="@+id/line_break">
-        <ImageView
-            android:id="@+id/call"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_call_24">
-        </ImageView>
-        <ImageView
-            android:id="@+id/message_main"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_message_24"/>
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/call_message_text"
-        android:layout_width="match_parent"
+        android:paddingBottom="10dp">
+    <com.example.nav_contacts.presentation.custom_view.IconWithNameLayout
+        android:id="@+id/call_layout"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:layout_height="wrap_content"/>
+    <com.example.nav_contacts.presentation.custom_view.IconWithNameLayout
+        android:id="@+id/message_layout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="10dp"
-        android:layout_below="@+id/call_message">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/call"
-            android:gravity="center"
-            android:textSize="15sp"/>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="@string/message"
-            android:gravity="center"
-            android:textSize="15sp"/>
+        android:layout_weight="0.5"
+        android:gravity="center"/>
     </LinearLayout>
     <View
         android:id="@+id/line_break1"
@@ -135,38 +114,58 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/lightGray"
-        android:layout_below="@id/call_message_text"/>
+        android:layout_below="@id/call_message_layout"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_contacts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/line_break1"
         android:paddingBottom="5dp"/>
-    <LinearLayout
-        android:id="@+id/mail_layout"
+<!--    <LinearLayout-->
+<!--        android:id="@+id/mail_layout"-->
+<!--        android:padding="10dp"-->
+<!--        android:layout_below="@+id/recycler_contacts"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content">-->
+<!--        <ImageView-->
+<!--            android:layout_marginStart="15dp"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@drawable/mail_icon"/>-->
+<!--        <TextView-->
+<!--            android:id="@+id/mail"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/emptyMail"/>-->
+<!--    </LinearLayout>-->
+
+    <ImageView
+        android:id="@+id/mail_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recycler_contacts"
+        android:layout_marginStart="15dp"
         android:padding="10dp"
-        android:layout_below="@+id/recycler_contacts"
+        android:src="@drawable/mail_icon" />
+    <TextView
+        android:id="@+id/mail_id"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_marginStart="15dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/mail_icon"/>
-        <TextView
-            android:id="@+id/mail"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/emptyMail"/>
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:text="@string/emptyMail"
+        android:layout_below="@id/recycler_contacts"
+        android:layout_toEndOf="@id/mail_icon"
+        android:paddingTop="10dp"
+        android:paddingBottom="5dp"/>
     <View
         android:padding="15dp"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/lightGray"
-        android:layout_below="@id/mail_layout"/>
+        android:layout_below="@id/mail_icon"/>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/edit_icon"
         android:layout_width="wrap_content"

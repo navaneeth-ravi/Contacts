@@ -1,4 +1,4 @@
-package com.example.nav_contacts
+package com.example.nav_contacts.presentation.fragment
 
 import android.app.Activity
 import android.content.ContentValues
@@ -17,10 +17,18 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.nav_contacts.*
+import com.example.nav_contacts.data.db.local_db.DatabaseFunctionalities
+import com.example.nav_contacts.data.db.local_db.MyContentProvider
+import com.example.nav_contacts.domain.entity.ContactDataClass
+import com.example.nav_contacts.presentation.adapter.ContactAndFavoriteAdapter
+import com.example.nav_contacts.presentation.activity.CreateAndEditContactActivity
+import com.example.nav_contacts.presentation.activity.MainActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.android.synthetic.main.fragment_display_contacts.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -59,7 +67,8 @@ class ContactsDisplayFragment : Fragment() {
         parent = activity as MainActivity
         recyler = contactDisplayView.findViewById(R.id.recycler)
         recyler.layoutManager=getLayoutManager()
-        recyler.adapter=ContactAndFavoriteAdapter(parent.gridForRecycler, context = context)
+        recyler.adapter= ContactAndFavoriteAdapter(parent.gridForRecycler, context = context)
+        recycler?.setHasFixedSize(true)
         val swipeGestures:ItemTouchHelper.Callback =
             if (!parent.gridForRecycler) {
                 getContactSwipeGestures()
@@ -86,7 +95,7 @@ class ContactsDisplayFragment : Fragment() {
     private val doCreateNewContact=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if (it.resultCode==Activity.RESULT_OK) {
             GlobalScope.launch(Dispatchers.IO) {
-                val cursor=DatabaseFunctionalities.getAllContactDataFromDatabase()
+                val cursor= DatabaseFunctionalities.getAllContactDataFromDatabase()
                 withContext(Dispatchers.Main){
                     updateAdapterData(cursor)
                 }
@@ -110,8 +119,8 @@ class ContactsDisplayFragment : Fragment() {
         }
     }
     private fun createNewContact(){
-        val intent=Intent(this.context,CreateAndEditContactActivity::class.java)
-        intent.putExtra(CreateAndEditContactActivity.OPTION,CreateAndEditContactActivity.CREATE)
+        val intent=Intent(this.context, CreateAndEditContactActivity::class.java)
+        intent.putExtra(CreateAndEditContactActivity.OPTION, CreateAndEditContactActivity.CREATE)
         doCreateNewContact.launch(intent)
     }
     private fun onRestore(savedInstanceState: Bundle){
@@ -123,7 +132,7 @@ class ContactsDisplayFragment : Fragment() {
 
     fun sortByFirstName(){
         val adapter=recyler.adapter as ContactAndFavoriteAdapter
-        SORT_BY_FIRST_NAME=true
+        SORT_BY_FIRST_NAME =true
         val sortedList:List<ContactDataClass>
         if (!parent.gridForRecycler) {
             sortedList=parent.contactList.sortedBy { it.firstName.uppercase() }
@@ -198,7 +207,9 @@ class ContactsDisplayFragment : Fragment() {
                     dY,
                     actionState,
                     isCurrentlyActive
-                ).addSwipeRightActionIcon(R.drawable.favorite).addSwipeRightLabel(resources.getString(R.string.un_favorite)).create().decorate()
+                ).addSwipeRightActionIcon(R.drawable.favorite).addSwipeRightLabel(resources.getString(
+                    R.string.un_favorite
+                )).create().decorate()
 
                 super.onChildDrawOver(
                     c,
@@ -222,7 +233,7 @@ class ContactsDisplayFragment : Fragment() {
         }
         val values = ContentValues()
         values.put(MyContentProvider.FAVORITE, 1)
-        DatabaseFunctionalities.update(values,data.dbID)
+        DatabaseFunctionalities.update(values, data.dbID)
         Toast.makeText(context, data.firstName+" "+data.lastName+" "+resources.getString(R.string.add_to_favorite), Toast.LENGTH_SHORT).show()
         adapter.notifyItemChanged(viewHolder.adapterPosition)
     }
@@ -235,7 +246,9 @@ class ContactsDisplayFragment : Fragment() {
         parent.favoriteList.removeIf { it.dbID==data.dbID }
         DatabaseFunctionalities.delete(data.dbID.toString())
         adapter.notifyItemRemoved(position)
-        val snackBar=Snackbar.make(recyler, data.firstName+" "+data.lastName+" "+resources.getString(R.string.deleted), Snackbar.LENGTH_SHORT)
+        val snackBar=Snackbar.make(recyler, data.firstName+" "+data.lastName+" "+resources.getString(
+            R.string.deleted
+        ), Snackbar.LENGTH_SHORT)
             .setTextColor(Color.WHITE)
             .setAction(resources.getString(R.string.undo)) {
                 undoDeletedContact(position,data)
@@ -250,7 +263,7 @@ class ContactsDisplayFragment : Fragment() {
         adapter.notifyItemInserted(position)
         parent.favoriteList.add(data)
         parent.favoriteList.sortBy { it.firstName.uppercase() }
-        val values=ContactDataClass.getContentValuesForContact(data)
+        val values= ContactDataClass.getContentValuesForContact(data)
         DatabaseFunctionalities.insert(values)
     }
     private fun getContactSwipeGestures():ItemTouchHelper.Callback{
@@ -296,7 +309,9 @@ class ContactsDisplayFragment : Fragment() {
                     .addSwipeRightBackgroundColor(0xffC40B0B.toInt())
                     .addSwipeRightLabel(resources.getString(R.string.delete)).setSwipeRightLabelColor(Color.WHITE)
                     .setSwipeRightActionIconTint(Color.WHITE)
-                    .addSwipeLeftActionIcon(R.drawable.favorite).addSwipeLeftLabel(resources.getString(R.string.favorite))
+                    .addSwipeLeftActionIcon(R.drawable.favorite).addSwipeLeftLabel(resources.getString(
+                        R.string.favorite
+                    ))
                     .create().decorate()
 
                 super.onChildDrawOver(

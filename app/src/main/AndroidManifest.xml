@@ -13,21 +13,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NavContacts">
         <provider
-            android:name=".MyContentProvider"
+            android:name=".data.db.local_db.MyContentProvider"
             android:authorities="com.nav.contact.provider"
             android:enabled="true"
             android:exported="false"/>
 
         <activity
-            android:name=".CreateAndEditContactActivity"
+            android:name=".presentation.activity.CreateAndEditContactActivity"
             android:exported="false"
             android:theme="@style/Theme1" />
         <activity
-            android:name=".ContactDetailsActivity"
+            android:name=".presentation.activity.ContactDetailsActivity"
             android:exported="false"
             android:theme="@style/Theme1" />
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.activity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme">
             <intent-filter>

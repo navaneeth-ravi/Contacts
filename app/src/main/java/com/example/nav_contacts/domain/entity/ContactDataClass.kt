@@ -1,7 +1,11 @@
-package com.example.nav_contacts
+package com.example.nav_contacts.domain.entity
 
 import android.content.ContentValues
 import android.database.Cursor
+import com.example.nav_contacts.ContactMain
+import com.example.nav_contacts.R
+import com.example.nav_contacts.data.db.local_db.MyContentProvider
+import com.example.nav_contacts.presentation.fragment.ContactsDisplayFragment
 
 
 data class ContactDataClass(var firstName: String,var lastName: String,var number:ArrayList<String>,
@@ -14,7 +18,10 @@ data class ContactDataClass(var firstName: String,var lastName: String,var numbe
             values.put(MyContentProvider.LAST_NAME,data.lastName)
             values.put(MyContentProvider.EMAIL,data.email)
             values.put(MyContentProvider.FAVORITE,data.favorite)
-            values.put(MyContentProvider.PROFILE_IMAGE, data.firstName+data.lastName+ContactMain.resources.getString(R.string.image_format))
+            values.put(
+                MyContentProvider.PROFILE_IMAGE, data.firstName+data.lastName+ ContactMain.resources.getString(
+                R.string.image_format
+            ))
             when( data.number.size) {
                 2 -> {
                    values.put(MyContentProvider.NUMBER1, data.number[0])
@@ -31,7 +38,7 @@ data class ContactDataClass(var firstName: String,var lastName: String,var numbe
             }
             return values
         }
-        fun getContact(cursor:Cursor?):ContactDataClass?{
+        fun getContact(cursor:Cursor?): ContactDataClass?{
             if (cursor!=null) {
                 try {
                     val firstNameId = cursor.getColumnIndex(MyContentProvider.FIRST_NAME)

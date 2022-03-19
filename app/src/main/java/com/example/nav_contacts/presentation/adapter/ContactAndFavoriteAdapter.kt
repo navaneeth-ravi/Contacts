@@ -1,4 +1,4 @@
-package com.example.nav_contacts
+package com.example.nav_contacts.presentation.adapter
 
 import android.Manifest
 import android.app.AlertDialog
@@ -15,6 +15,11 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.nav_contacts.*
+import com.example.nav_contacts.domain.entity.ContactDataClass
+import com.example.nav_contacts.presentation.activity.ContactDetailsActivity
+import com.example.nav_contacts.presentation.activity.MainActivity
+import com.example.nav_contacts.presentation.fragment.ContactsDisplayFragment
 import java.io.File
 import java.io.IOException
 import kotlin.random.Random
@@ -24,7 +29,7 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var context
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var values= ArrayList<ContactDataClass>()
-    private val resources:Resources=ContactMain.resources
+    private val resources:Resources= ContactMain.resources
     companion object {
         private val IMAGE_DIRECTORY_NAME = ContactMain.resources.getString(R.string.image_directory_name)
         private val IMAGE_FORMAT = ContactMain.resources.getString(R.string.image_format)
@@ -46,7 +51,7 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var context
         val profilePicture:ImageView = itemView.findViewById(R.id.user_ic)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if(viewType==ContactsDisplayFragment.CONTACTS){
+        return if(viewType== ContactsDisplayFragment.CONTACTS){
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.contact_item, parent, false)
                 ViewHolderForContact(view)
             }
@@ -56,7 +61,7 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var context
             }
     }
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) =
-        if(getItemViewType(position)==ContactsDisplayFragment.CONTACTS){
+        if(getItemViewType(position)== ContactsDisplayFragment.CONTACTS){
             holder as ViewHolderForContact
             onBindViewHolderContact(holder,position)
         }
@@ -64,7 +69,7 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var context
             holder as ViewHolderForFavorite
             onBindViewHolderFavorite(holder,position)
         }
-    private fun onBindViewHolderContact(holder:ViewHolderForContact, position: Int){
+    private fun onBindViewHolderContact(holder: ViewHolderForContact, position: Int){
         holder.contactIconButton.text = values[position].firstName[0].toString()
         val sortLastContactName = values[position].lastName + " " + values[position].firstName
         val sortFirstContactName = values[position].firstName + " " + values[position].lastName
@@ -84,7 +89,7 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var context
         try {
             val directory = context?.filesDir
             val imageDirectory = File(directory, IMAGE_DIRECTORY_NAME)
-            val imgFile = File(imageDirectory, fileName+IMAGE_FORMAT)
+            val imgFile = File(imageDirectory, fileName+ IMAGE_FORMAT)
             if (imgFile.exists()) {
                 holder.profileImage.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
             } else {
@@ -101,8 +106,8 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var context
         val lastName = values[position ].lastName
         try {
             val directory = context?.filesDir
-            val imageDirectory = File(directory,IMAGE_DIRECTORY_NAME)
-            val imgFile = File(imageDirectory, firstName + lastName+IMAGE_FORMAT)
+            val imageDirectory = File(directory, IMAGE_DIRECTORY_NAME)
+            val imgFile = File(imageDirectory, firstName + lastName+ IMAGE_FORMAT)
             if (imgFile.exists()) {
                 holder.letter.visibility = View.GONE
                 holder.profilePicture.setImageDrawable(Drawable.createFromPath(imgFile.toString()))
@@ -132,14 +137,20 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var context
         val phone:String
         if (values[position].number.isNotEmpty()) {
             phone = "tel:" + values[position].number[0]
-            if (PermissionUtils.hasPermission(context as MainActivity,Manifest.permission.CALL_PHONE)) {
+            if (PermissionUtils.hasPermission(
+                    context as MainActivity,
+                    Manifest.permission.CALL_PHONE
+                )
+            ) {
                 makePhoneCall(phone)
             } else {
-                if (PermissionUtils.shouldShowRational(context,Manifest.permission.CALL_PHONE)){
+                if (PermissionUtils.shouldShowRational(context, Manifest.permission.CALL_PHONE)){
                     alertDialogForGettingCallPermission()
                 } else {
-                    PermissionUtils.requestPermissions(context, arrayOf(Manifest.permission.CALL_PHONE),
-                        PermissionUtils.CALL_PERMISSION_CODE)
+                    PermissionUtils.requestPermissions(
+                        context, arrayOf(Manifest.permission.CALL_PHONE),
+                        PermissionUtils.CALL_PERMISSION_CODE
+                    )
                 }
             }
         }
@@ -195,8 +206,8 @@ class ContactAndFavoriteAdapter(private val gridForRecycler:Boolean, var context
 
     private fun viewContactDetails(view: View, position: Int){
         val intent=Intent( view.context , ContactDetailsActivity::class.java )
-        intent.putExtra( ContactDetailsActivity.CONTACT_KEY , values[position].dbID )
-        intent.putExtra( ContactDetailsActivity.POSITION_IN_ADAPTER , position )
+        intent.putExtra(ContactDetailsActivity.CONTACT_KEY, values[position].dbID )
+        intent.putExtra(ContactDetailsActivity.POSITION_IN_ADAPTER, position )
         (context as MainActivity).details.launch(intent)
     }
     fun setAdapterContactData(list:ArrayList<ContactDataClass>){

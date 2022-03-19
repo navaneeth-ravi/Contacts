@@ -1,8 +1,12 @@
-package com.example.nav_contacts
+package com.example.nav_contacts.data.db.remote_db
 
 import android.database.Cursor
 import android.provider.ContactsContract
+import com.example.nav_contacts.ContactMain
 import com.example.nav_contacts.ContactMain.Companion.contentResolver
+import com.example.nav_contacts.R
+import com.example.nav_contacts.data.db.local_db.DatabaseFunctionalities
+import com.example.nav_contacts.domain.entity.ContactDataClass
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -34,7 +38,7 @@ object SystemContact {
     }
     // single responsibilty principle
     //contact util all getcontact
-    suspend fun getContact(cursor: Cursor?):ContactDataClass?{
+    suspend fun getContact(cursor: Cursor?): ContactDataClass?{
         if(cursor!=null){
             val idIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID)
             val contactId = cursor.getString( idIndex )
@@ -66,7 +70,7 @@ object SystemContact {
                 number,
                 email = email,
                 favorite = favorite,
-                profileImage = firstName+""+ContactMain.resources.getString(R.string.image_format)
+                profileImage = firstName+""+ ContactMain.resources.getString(R.string.image_format)
             )
         }
         else{

@@ -1,4 +1,4 @@
-package com.example.nav_contacts
+package com.example.nav_contacts.presentation.activity
 
 
 import android.Manifest
@@ -18,6 +18,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import com.example.nav_contacts.*
+import com.example.nav_contacts.data.db.local_db.DatabaseFunctionalities
+import com.example.nav_contacts.data.db.remote_db.SystemContact
+import com.example.nav_contacts.domain.entity.ContactDataClass
+import com.example.nav_contacts.presentation.adapter.ContactAndFavoriteAdapter
+import com.example.nav_contacts.presentation.fragment.ContactsDisplayFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -63,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         portrait = resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
 
         if (savedInstanceState==null) {
-            displayContactsFragment=ContactsDisplayFragment()
+            displayContactsFragment= ContactsDisplayFragment()
             supportFragmentManager.beginTransaction()
                 .add(R.id.container_for_display_contact_fragments,displayContactsFragment).commit()
         }
@@ -87,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     }
     private fun loadData(){
         GlobalScope.launch(Dispatchers.IO) {
-            val cursor=DatabaseFunctionalities.getAllContactDataFromDatabase()
+            val cursor= DatabaseFunctionalities.getAllContactDataFromDatabase()
             withContext(Dispatchers.Main){
                 getAllContacts(cursor)
                 refresh()
@@ -95,20 +101,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun isContactPermission():Boolean{
-        return PermissionUtils.hasPermission(this,Manifest.permission.READ_CONTACTS)
+        return PermissionUtils.hasPermission(this, Manifest.permission.READ_CONTACTS)
     }
     private fun buildAlertMessageToContinueOrCloseApplication(){
         AlertDialog.Builder(this).setTitle(resources.getString(R.string.allow_app))
             .setPositiveButton(resources.getString(R.string.ok)){ _, _ ->
-                PermissionUtils.requestPermissions(this, arrayOf(Manifest.permission.READ_CONTACTS), PermissionUtils.CONTACTS_PERMISSION_CODE)
-        }.setNegativeButton(resources.getString(R.string.cancel)){dialogInterface,_ ->
+                PermissionUtils.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_CONTACTS),
+                    PermissionUtils.CONTACTS_PERMISSION_CODE
+                )
+        }.setNegativeButton(resources.getString(R.string.cancel)){ dialogInterface, _ ->
                 dialogInterface.dismiss()
                 finish()
         }.setCancelable(false).show()
     }
     private fun buildInfo(){
         AlertDialog.Builder(this).setTitle(resources.getString(R.string.allow_app))
-            .setPositiveButton(resources.getString(R.string.ok)){dialogInterface,_ ->
+            .setPositiveButton(resources.getString(R.string.ok)){ dialogInterface, _ ->
                 dialogInterface.dismiss()
             }.setCancelable(false).setTitle("Attention Users!!!")
             .setMessage(resources.getString(R.string.instructionsInfo)).show()
@@ -135,7 +145,7 @@ class MainActivity : AppCompatActivity() {
     }
     private fun updateAdapterData(cursor: Cursor?,adapterPosition:Int,dbId:Int?){
         cursor?.moveToFirst()
-        val data=ContactDataClass.getContact(cursor)
+        val data= ContactDataClass.getContact(cursor)
         val adapter =
             displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter
         if(data!=null){
@@ -163,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                 adapter.notifyItemChanged(adapterPosition)
                 val contact=favoriteList.find { it.dbID==data.dbID }
                 val index = favoriteList.indexOf(contact)
-                favoriteList[index]=data
+//                favoriteList[index]=data
             }
         } else{                           // update if contact is deleted
             adapter.values.removeAt(adapterPosition)
@@ -208,7 +218,7 @@ class MainActivity : AppCompatActivity() {
             var searchAdapterValues=ArrayList<ContactDataClass>()
             override fun onQueryTextChange(search: String?): Boolean {
                 searchAdapterValues.clear()
-                val adapter:ContactAndFavoriteAdapter=(displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter)
+                val adapter: ContactAndFavoriteAdapter =(displayContactsFragment.recyler.adapter as ContactAndFavoriteAdapter)
                 if (search!=null) {
                     if (!gridForRecycler) {
                         contactList.forEach {
@@ -272,15 +282,15 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode==PermissionUtils.CALL_PERMISSION_CODE && grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+        if (requestCode== PermissionUtils.CALL_PERMISSION_CODE && grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             Toast.makeText(this, resources.getString(R.string.permission_allowed), Toast.LENGTH_SHORT).show()
         }
-        if (requestCode==PermissionUtils.CONTACTS_PERMISSION_CODE && grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+        if (requestCode== PermissionUtils.CONTACTS_PERMISSION_CODE && grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             Toast.makeText(this, resources.getString(R.string.permission_allowed), Toast.LENGTH_SHORT).show()
             doAppInstallationAction()
         }else{
             Toast.makeText(this,resources.getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
-            if(requestCode==PermissionUtils.CONTACTS_PERMISSION_CODE) {
+            if(requestCode== PermissionUtils.CONTACTS_PERMISSION_CODE) {
                 finish()
             }
         }
@@ -289,10 +299,12 @@ class MainActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         findViewById<Button>(R.id.fav).setTextColor(savedInstanceState.getInt(
-            FAVORITES_CONTACT_BUTTON_TEXT_COLOR_KEY))
+            FAVORITES_CONTACT_BUTTON_TEXT_COLOR_KEY
+        ))
 
         findViewById<Button>(R.id.contacts).setTextColor(savedInstanceState.getInt(
-            CONTACT_BUTTON_TEXT_COLOR_KEY))
+            CONTACT_BUTTON_TEXT_COLOR_KEY
+        ))
 
         searchText=savedInstanceState.getString(SEARCH_TEXT,"")
     }
@@ -312,7 +324,7 @@ class MainActivity : AppCompatActivity() {
         val favorites:Button=findViewById(R.id.fav)
         val contacts:Button=findViewById(R.id.contacts)
         favorites.setOnClickListener {
-            displayContactsFragment=ContactsDisplayFragment()
+            displayContactsFragment= ContactsDisplayFragment()
             gridForRecycler=true
             favorites.setTextColor(getColor(R.color.blue))
             contacts.setTextColor(getColor(R.color.black))
@@ -320,7 +332,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction().replace(R.id.container_for_display_contact_fragments,displayContactsFragment/*FavoritesFragment()*/).commit()
         }
         contacts.setOnClickListener {
-            displayContactsFragment=ContactsDisplayFragment()
+            displayContactsFragment= ContactsDisplayFragment()
             gridForRecycler=false
             favorites.setTextColor(getColor(R.color.black))
             contacts.setTextColor(getColor(R.color.blue))
@@ -333,7 +345,7 @@ class MainActivity : AppCompatActivity() {
         contactList= ArrayList()
         if (cursor!!.moveToNext()) {
             while (!cursor.isAfterLast) {
-                val contactDataClass=ContactDataClass.getContact(cursor)
+                val contactDataClass= ContactDataClass.getContact(cursor)
                 if(contactDataClass!=null){
                     contactList.add(contactDataClass)
                 }

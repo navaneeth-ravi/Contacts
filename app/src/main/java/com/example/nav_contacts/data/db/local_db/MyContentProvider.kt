@@ -1,4 +1,4 @@
-package com.example.nav_contacts
+package com.example.nav_contacts.data.db.local_db
 
 import android.content.*
 import android.database.Cursor
@@ -29,7 +29,7 @@ class MyContentProvider : ContentProvider() {
         private val values: HashMap<String, String>? = null
         const val DATABASE_NAME = "UserDB"
         const val DATABASE_VERSION = 1
-        const val CREATE_DB_TABLE = ("CREATE TABLE " +TABLE_NAME + " ("
+        const val CREATE_DB_TABLE = ("CREATE TABLE " + TABLE_NAME + " ("
                 + ID + " INTEGER PRIMARY KEY, " +
                 FIRST_NAME + " TEXT," +
                 LAST_NAME + " TEXT," +
@@ -50,7 +50,7 @@ class MyContentProvider : ContentProvider() {
     }
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         val count: Int = when(uriMatcher!!.match(uri)){
-            uriCode->db!!.delete(TABLE_NAME,selection,selectionArgs)
+            uriCode ->db!!.delete(TABLE_NAME,selection,selectionArgs)
             else -> throw IllegalArgumentException("Unknown URI $uri")
         }
         context!!.contentResolver.notifyChange(uri,null)
@@ -61,7 +61,7 @@ class MyContentProvider : ContentProvider() {
         selectionArgs: Array<String>?
     ): Int {
         val count: Int = when(uriMatcher!!.match(uri)){
-            uriCode->db!!.update(TABLE_NAME,values,selection,selectionArgs)
+            uriCode ->db!!.update(TABLE_NAME,values,selection,selectionArgs)
             else -> throw IllegalArgumentException("Unknown URI $uri")
         }
         context!!.contentResolver.notifyChange(uri,null)
@@ -98,7 +98,7 @@ class MyContentProvider : ContentProvider() {
         val queryBuilder = SQLiteQueryBuilder()
         queryBuilder.tables = TABLE_NAME
         when ( uriMatcher!!.match(uri) ) {
-            uriCode-> {
+            uriCode -> {
                 queryBuilder.projectionMap = values
             }
             else->{
